@@ -15,9 +15,9 @@ class BasePage(object):
 
     locators = basic_locators.BasePageLocators()
     locators_main = basic_locators.MainPageLocators()
-    url = 'https://www.python.org/'
+    url = 'https://education.vk.company/'
 
-    def is_opened(self, timeout=15):
+    def is_opened(self, timeout=5):
         started = time.time()
         while time.time() - started < timeout:
             if self.driver.current_url == self.url:
