@@ -3,11 +3,12 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.firefox import GeckoDriverManager
-from Selenium.code.ui.pages.base_page import BasePage
-from Selenium.code.ui.pages.main_page import MainPage
+from ui.pages.base_page import BasePage
+from ui.pages.main_page import MainPage
+from ui.pages.login_page_vked import LoginPage
 
 
-@pytest.fixture()
+@pytest.fixture(scope='function')
 def driver(config):
     browser = config['browser']
     url = config['url']
@@ -66,3 +67,18 @@ def base_page(driver):
 @pytest.fixture
 def main_page(driver):
     return MainPage(driver=driver)
+
+@pytest.fixture
+def login_vked_page(driver):
+    return LoginPage(driver=driver)
+
+
+@pytest.fixture(scope='session')
+def credentials_vked():
+    return {
+        'email': '',
+        'password': ''
+    }
+@pytest.fixture(scope='session')
+def cookies(credentials, config):
+        pass

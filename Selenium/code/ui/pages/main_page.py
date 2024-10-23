@@ -1,9 +1,9 @@
 from selenium.webdriver.common.by import By
 
 import allure
-from Selenium.code.ui.locators import basic_locators
-from Selenium.code.ui.pages.base_page import BasePage
-from Selenium.code.ui.pages.events_page import EventsPage
+from ui.locators import basic_locators
+from ui.pages.base_page import BasePage
+from ui.pages.events_page import EventsPage
 
 
 class MainPage(BasePage):

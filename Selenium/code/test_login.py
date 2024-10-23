@@ -1,54 +1,30 @@
 import pytest
 from _pytest.fixtures import FixtureRequest
 
+from base_vked import BaseCaseVkEd
 from ui.pages.base_page import BasePage
 
 
-class BaseCase:
+
+
+
+
+
+class TestLogin(BaseCaseVkEd):
+
+
     authorize = True
 
-    @pytest.fixture(scope='function', autouse=True)
-    def setup(self, driver, config, request: FixtureRequest):
-        self.driver = driver
-        self.config = config
-
-        self.login_page = LoginPage(driver)
-        if self.authorize:
-            print('Do something for login')
-
-
-@pytest.fixture(scope='session')
-def credentials():
+    def test_login(self, credentials_vked):
         pass
+        #TODO добавить проверку, что получилось зарегаться? или добавить её сразу в login
 
 
-@pytest.fixture(scope='session')
-def cookies(credentials, config):
-        pass
-
-
-class LoginPage(BasePage):
-    url = 'https://education.vk.company'
-
-    def login(self, user, password):
-        return MainPage(self.driver)
-
-
-class MainPage(BasePage):
-    url = 'https://education.vk.company/feed/'
-
-
-class TestLogin(BaseCase):
-    authorize = True
-
-    def test_login(self, credentials):
-        pass
-
-
-class TestLK(BaseCase):
+class TestLK(BaseCaseVkEd):
 
     def test_lk1(self):
         pass
+
 
     def test_lk2(self):
         pass
