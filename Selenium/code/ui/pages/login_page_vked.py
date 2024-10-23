@@ -14,7 +14,7 @@ class PageNotOpenedExeption(Exception):
 
 class LoginPage(object):
 
-    locators = AuthPageLocators()
+    login_locators = AuthPageLocators()
     url = 'https://education.vk.company/'
 
     def is_opened(self, timeout=15):
@@ -36,8 +36,6 @@ class LoginPage(object):
     def find(self, locator, timeout=None):
         return self.wait(timeout).until(EC.presence_of_element_located(locator))
 
-
-    #TODO свои функции сделать часто использующиеся и добавлять их локаторы в vked_locators.py
     @allure.step('Search')
     def search(self, query):
         elem = self.find(self.locators.QUERY_LOCATOR_ID)
@@ -58,6 +56,12 @@ class LoginPage(object):
 
     @allure.step('EnterField')
     def enter_field(self, locator, value, timeout=None) -> WebElement:
+        elem = self.find(locator, timeout)
+        elem.clear()
+        elem.send_keys(value)
+
+    @allure.step('EnterFieldReturn')
+    def enter_field_return(self, locator, value, timeout=None) -> WebElement:
         elem = self.find(locator, timeout)
         elem.clear()
         elem.send_keys(value)

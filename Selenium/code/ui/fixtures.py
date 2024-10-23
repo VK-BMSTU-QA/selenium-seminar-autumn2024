@@ -73,6 +73,7 @@ def login_vked_page(driver):
     return LoginPage(driver=driver)
 
 
+
 @pytest.fixture(scope='session')
 def credentials_vked():
     with open('files/userdata.json', 'r') as f:
@@ -86,6 +87,19 @@ def credentials_vked():
         'password':   password,
         'profile_fi': profile_fi
     }
+
+@pytest.fixture(scope='session')
+def user_to_find_vked():
+    with open('files/userdata.json', 'r') as f:
+        userdata = json.load(f)
+
+    name_to_find = userdata['name_to_find']
+    surname_to_find = userdata['surname_to_find']
+    return {
+        'name_to_find':      name_to_find,
+        'surname_to_find':   surname_to_find,
+    }
+
 
 @pytest.fixture(scope='session')
 def cookies(credentials, config):
