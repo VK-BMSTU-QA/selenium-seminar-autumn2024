@@ -14,6 +14,9 @@ class BasePageLocators:
     SUBMIT_BUTTON = (By.XPATH, '//button[@type="submit" and contains(text(), "Войти с паролем")]')
     SEARCH_BUTTON = (By.CSS_SELECTOR, 'li.js-show-search')
     SEARCH_FIELD = (By.XPATH, '//input[@placeholder="Поиск..."]')
+    PERSON_BLOCK = (By.XPATH, '//a[@href="https://education.vk.company/profile/user_149167/"]')
+    SCHEDULE_BUTTON = (By.XPATH, '//a[@href="/schedule/"]')
+    FIRST_CLASS = (By.XPATH, '//tbody/tr[1]/td/a[@class="schedule-show-info"]')
 
 
 

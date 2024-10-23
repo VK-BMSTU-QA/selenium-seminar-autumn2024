@@ -1,10 +1,8 @@
 import pytest
 import json
-import time
-from _pytest.fixtures import FixtureRequest
-from selenium.webdriver import ActionChains
-from selenium.webdriver.common.keys import Keys
 
+from _pytest.fixtures import FixtureRequest
+from selenium.webdriver.common.keys import Keys
 from ui.pages.base_page import BasePage
 
 
@@ -56,13 +54,13 @@ class MainPage(BasePage):
 class TestLogin(BaseCase):
     authorize = True
 
+    # 1. авторизация
     def test_login(self, credentials):
         self.login_page.login(credentials["login"], credentials["password"])
-        pass
 
 
 class TestLK(BaseCase):
-    # 1. найти человека в лк и получить информацию "о себе"
+    # 2. найти человека в лк и получить информацию "о себе"
     def test_lk1(self, credentials):
         self.login_page.login(credentials["login"], credentials["password"])
         search_button = self.login_page.find(self.login_page.locators.SEARCH_BUTTON)
@@ -70,20 +68,13 @@ class TestLK(BaseCase):
         search_field = self.login_page.find(self.login_page.locators.SEARCH_FIELD)
         search_field.send_keys("Александр Горбатов")
         search_field.send_keys(Keys.ENTER)
-        time.sleep(5)
-        pass
+        person_block = self.login_page.find(self.login_page.locators.PERSON_BLOCK)
+        person_block.click()
 
-    @pytest.mark.skip('skip')
-    def test_lk2(self):
-        pass
-
-    @pytest.mark.skip('skip')
-    def test_lk3(self):
-        pass
-
-
-# 1. найти человека в лк и получить информацию о себе
-#
-# 2. узнать аудиторию сегодняшнего занятия
-#
-# 3. получить инфу о месте проведения
+    # 3. узнать аудиторию сегодняшнего занятия
+    def test_lk2(self, credentials):
+        self.login_page.login(credentials["login"], credentials["password"])
+        schedule_button = self.login_page.find(self.login_page.locators.SCHEDULE_BUTTON)
+        schedule_button.click()
+        first_class_button = self.login_page.find(self.login_page.locators.FIRST_CLASS)
+        first_class_button.click()
