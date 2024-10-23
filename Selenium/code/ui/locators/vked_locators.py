@@ -7,3 +7,4 @@ class AuthPageLocators:
     EMAIL_INP_LOC = (By.CLASS_NAME, "kbKfOy")
     PASSWORD_INP_LOC = (By.CLASS_NAME, "kLHUmL")
     SUBMIT_ENTER_BTN_LOC = (By.CLASS_NAME, 'gmKwFa')
+    PROFILE_FIO_LOC = (By.CLASS_NAME, 'username')

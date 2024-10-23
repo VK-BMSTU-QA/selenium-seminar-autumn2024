@@ -6,7 +6,7 @@ from webdriver_manager.firefox import GeckoDriverManager
 from ui.pages.base_page import BasePage
 from ui.pages.main_page import MainPage
 from ui.pages.login_page_vked import LoginPage
-
+import json
 
 @pytest.fixture(scope='function')
 def driver(config):
@@ -75,10 +75,18 @@ def login_vked_page(driver):
 
 @pytest.fixture(scope='session')
 def credentials_vked():
+    with open('files/userdata.json', 'r') as f:
+        userdata = json.load(f)
+    email = userdata['email']
+    password = userdata['password']
+    profile_fi = userdata['profile_fi']
+
     return {
-        'email': '',
-        'password': ''
+        'email':      email,
+        'password':   password,
+        'profile_fi': profile_fi
     }
+
 @pytest.fixture(scope='session')
 def cookies(credentials, config):
         pass

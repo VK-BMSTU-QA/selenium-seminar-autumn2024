@@ -107,7 +107,7 @@ class TestLoad(BaseCase):
 
     @pytest.fixture()
     def file_path(self, repo_root):
-        return os.path.join(repo_root, 'files', 'userdata')
+        return os.path.join(repo_root, 'files', 'userdata.json')
 
     @pytest.mark.skip('skip')
     def test_upload(self, file_path):

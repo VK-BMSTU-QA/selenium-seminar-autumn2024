@@ -15,9 +15,12 @@
 
 
 
-# Как запустить тесты
 
-0. В 
-1. Открыть консоль и быть в selenium-seminar-autumn2024
+
+# В ui/fixtures.py в credentials_vked ввести свои email и password от vk_education
+
+## Как запустить тесты
+
+1. Открыть консоль и быть в папке selenium-seminar-autumn2024
 2. chmod +x run_tests.sh
-3. ./run_vk_tests.sh
+3. ./run_vk_tests.sh (при желании там можно раскомментировать строку для теста python.org)

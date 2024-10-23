@@ -16,10 +16,8 @@ class TestLogin(BaseCaseVkEd):
     authorize = True
 
     def test_login(self, credentials_vked):
-        pass
-        #TODO добавить проверку, что получилось зарегаться? или добавить её сразу в login
-
-
+        pass # assert встроен в login
+'''
 class TestLK(BaseCaseVkEd):
 
     def test_lk1(self):
@@ -31,3 +29,6 @@ class TestLK(BaseCaseVkEd):
 
     def test_lk3(self):
         pass
+
+'''
+
