@@ -3,8 +3,8 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.firefox import GeckoDriverManager
-from Selenium.code.ui.pages.base_page_vk import BasePage
-from Selenium.code.ui.pages.main_page import MainPage
+from ui.pages.base_page_vk import BasePage
+from ui.pages.main_page import MainPage
 
 
 @pytest.fixture()

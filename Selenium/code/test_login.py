@@ -16,8 +16,6 @@ class BaseCase:
         self.driver = driver
         self.config = config
         self.login_page = LoginPage(driver)
-        if self.authorize:
-            print('Do something for login')
 
 
 @pytest.fixture(scope='session')

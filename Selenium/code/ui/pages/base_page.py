@@ -2,7 +2,7 @@ import time
 
 import allure
 from selenium.webdriver.remote.webelement import WebElement
-from Selenium.code.ui.locators import basic_locators
+from ui.locators import basic_locators
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
