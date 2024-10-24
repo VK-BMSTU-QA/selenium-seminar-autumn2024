@@ -7,7 +7,7 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 
-class PageNotOpenedExeption(Exception):
+class PageNotOpenedException(Exception):
     pass
 
 
@@ -17,20 +17,21 @@ class BasePage(object):
     locators_main = basic_locators.MainPageLocators()
     url = 'https://www.python.org/'
 
-    def is_opened(self, timeout=15):
+    def is_opened(self, timeout=60):
         started = time.time()
         while time.time() - started < timeout:
             if self.driver.current_url == self.url:
                 return True
-        raise PageNotOpenedExeption(f'{self.url} did not open in {timeout} sec, current url {self.driver.current_url}')
+        raise PageNotOpenedException(f'{self.url} did not open in {timeout} sec, current url {self.driver.current_url}')
 
     def __init__(self, driver):
         self.driver = driver
+        self.driver.get(self.url)
         self.is_opened()
 
     def wait(self, timeout=None):
         if timeout is None:
-            timeout = 5
+            timeout = 15
         return WebDriverWait(self.driver, timeout=timeout)
 
     def find(self, locator, timeout=None):
@@ -47,7 +48,6 @@ class BasePage(object):
     @allure.step("Step 1")
     def my_assert(self):
         assert 1 == 1
-
 
     @allure.step('Click')
     def click(self, locator, timeout=None) -> WebElement:
