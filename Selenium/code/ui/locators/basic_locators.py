@@ -10,13 +10,5 @@ class BasePageLocators:
 
 
 class MainPageLocators(BasePageLocators):
-    COMPREHENSIONS = (
-        By.XPATH,
-        '//code/span[@class="comment" and contains(text(), "comprehensions")]'
-    )
-    EVENTS = (By.ID, 'events')
-    READ_MORE = (By.CSS_SELECTOR, 'a.readmore')
-
-
-class EventsPageLocators(BasePageLocators):
-    pass
+    ABOUT_PAGE_LINK = (By.CSS_SELECTOR, "a[href*='/people/']")
+    LESSONS_SLIDER_LEFT_BTN = (By.CSS_SELECTOR, "div[style*='left: 0px;']")
