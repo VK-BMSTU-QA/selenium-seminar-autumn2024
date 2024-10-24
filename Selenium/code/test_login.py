@@ -1,6 +1,8 @@
+import json
 import time
 import pytest
 from _pytest.fixtures import FixtureRequest
+from selenium.webdriver.common.keys import Keys
 
 from ui.pages.base_page_vk import BasePage
 from ui.locators import basic_locators_vk
@@ -25,14 +27,6 @@ def credentials():
         'password': ''
     }
 
-@pytest.fixture(scope='session')
-def cookies(credentials, config, driver):
-    login_page = LoginPage(driver)
-    login_page.login(credentials)
-
-    cookies = driver.get_cookies()
-    yield cookies
-
 
 class LoginPage(BasePage):
     url = 'https://education.vk.company/'
@@ -48,19 +42,18 @@ class LoginPage(BasePage):
         )
         time.sleep(3)
         self.input(
-            basic_locators_vk.LoginPageLocators.LOGIN_INPUT,
+            basic_locators_vk.LoginPageLocators.LOGIN_INPUT_LOCATOR,
             credentials.get('user', ''),
         )
         self.input(
-            basic_locators_vk.LoginPageLocators.PASSWORD_INPUT,
+            basic_locators_vk.LoginPageLocators.PASSWORD_INPUT_LOCATOR,
             credentials.get('password', ''),
         )
         time.sleep(3)
         self.click(
-            basic_locators_vk.LoginPageLocators.LOGIN_BUTTON, timeout=10
+            basic_locators_vk.LoginPageLocators.GO_BUTTON_LOGIN_LOCATOR, timeout=10
         )
-        time.sleep(3)
-        return MainPage(self.driver)
+        time.sleep(5)
 
 
 class MainPage(BasePage):
@@ -69,6 +62,19 @@ class MainPage(BasePage):
     def is_opened(self):
         # Проверим, что мы находимся на главной странице
         return self.driver.current_url == self.url
+
+    def open_main(self):
+        # Загружаем cookies из файла
+        with open('cookies.json', 'r') as f:
+            cookies = json.load(f)
+
+        # Добавляем cookies в браузер
+        for cookie in cookies:
+            self.driver.add_cookie(cookie)
+            # Переходим на страницу /feed/, требующую авторизации
+        self.driver.get('https://education.vk.company/feed/')
+        time.sleep(3)
+
 
 
 class TestLogin(BaseCase):
@@ -80,16 +86,32 @@ class TestLogin(BaseCase):
 
 class TestLK(BaseCase):
 
-    def test_lk1(self, credentials):
+    def test_login(self, credentials):
         login_page = LoginPage(self.driver)
         login_page.login(credentials)
 
-    def test_lk2(self, cookies):
-        for cookie in cookies:
-            self.driver.add_cookie(cookie)
-        self.driver.get('https://education.vk.company/feed/')
+        # Сохраняем cookies после успешного входа в файл
+        cookies = self.driver.get_cookies()
+        with open('cookies.json', 'w') as f:
+            json.dump(cookies, f)
+
+    def test_friend(self):
+        main_page = MainPage(self.driver)
+        main_page.open_main()
+        main_page.click(
+            basic_locators_vk.MainPageLocators.GO_BUTTON_OPENSEARCH_LOCATOR, timeout=10
+        )
+        time.sleep(1)
+        search_element = basic_locators_vk.MainPageLocators.SEARCH_INPUT_LOCATOR
+        main_page.input(search_element, "Александр Никитин")
+        time.sleep(1)
+        main_page.find(search_element).send_keys(Keys.RETURN)
+        time.sleep(1)
+        main_page.click(
+            basic_locators_vk.MainPageLocators.FRIEND_LOCATOR, timeout=10
+        )
         time.sleep(5)
 
     @pytest.mark.skip('skip')
-    def test_lk3(self):
+    def test_lesson(self):
         pass
