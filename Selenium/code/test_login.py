@@ -76,21 +76,13 @@ class MainPage(BasePage):
         time.sleep(3)
 
 
-
-class TestLogin(BaseCase):
-    authorize = True
-
-    def test_login(self, credentials):
-        pass
-
-
 class TestLK(BaseCase):
 
     def test_login(self, credentials):
         login_page = LoginPage(self.driver)
         login_page.login(credentials)
 
-        # Сохраняем cookies после успешного входа в файл
+        # Сохраняем cookies
         cookies = self.driver.get_cookies()
         with open('cookies.json', 'w') as f:
             json.dump(cookies, f)
@@ -112,6 +104,22 @@ class TestLK(BaseCase):
         )
         time.sleep(5)
 
-    @pytest.mark.skip('skip')
     def test_lesson(self):
-        pass
+        main_page = MainPage(self.driver)
+        main_page.open_main()
+        main_page.click(
+            basic_locators_vk.MainPageLocators.GO_BUTTON_PROGRAM_LOCATOR, timeout=10
+        )
+        time.sleep(1)
+        main_page.click(
+            basic_locators_vk.MainPageLocators.GO_BUTTON_PROGRAM_TEST_LOCATOR, timeout=10
+        )
+        time.sleep(1)
+        main_page.click(
+            basic_locators_vk.MainPageLocators.GO_BUTTON_LESSONS_LOCATOR, timeout=10
+        )
+        time.sleep(1)
+        main_page.click(
+            basic_locators_vk.MainPageLocators.GO_BUTTON_LESSON_LOCATOR, timeout=10
+        )
+        time.sleep(5)

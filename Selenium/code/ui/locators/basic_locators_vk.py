@@ -11,8 +11,8 @@ class MainPageLocators:
     GO_BUTTON_OPENSEARCH_LOCATOR = (By.XPATH, '//li[@class="js-show-search"]')
     SEARCH_INPUT_LOCATOR = (By.CSS_SELECTOR, 'li.js-search-input input[name="query"]')
     FRIEND_LOCATOR = (By.XPATH, '//a[contains(@href, "188197")]')
-    SEARCH_BUTTON = (By.XPATH, '//button[@type="submit"]')
-    SEARCH_RESULTS = (By.CLASS_NAME, 'results')
-    SEMINAR_SEARCH_INPUT = (By.ID, 'seminar_search')
-    SEMINAR_SEARCH_BUTTON = (By.XPATH, '//button[@type="submit"]')
-    SEMINAR_RESULTS = (By.CLASS_NAME, 'seminar_results')
+    GO_BUTTON_PROGRAM_LOCATOR = (By.XPATH, '//a[@href="/curriculum/program/"]')
+    GO_BUTTON_PROGRAM_TEST_LOCATOR = (By.XPATH, '//a[@href="/curriculum/program/discipline/2291/"]')
+    GO_BUTTON_LESSONS_LOCATOR = (By.XPATH, '//a[@class="js-toggle-lessons"]')
+    GO_BUTTON_LESSON_LOCATOR = (By.XPATH, '//a[contains(@href, "28796")]')
+
