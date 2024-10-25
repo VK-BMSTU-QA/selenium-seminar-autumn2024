@@ -8,7 +8,7 @@ class TestLogin(BaseCase):
         assert "Лента" in self.driver.title
 
 
-class TestUserInfo(BaseCase):
+class TestLK(BaseCase):
     def test_user_about_info(self, request):
         credentials = request.getfixturevalue("credentials")
         self.main_page = self.login_page.login(*credentials)
@@ -21,8 +21,6 @@ class TestUserInfo(BaseCase):
         about = self.user_page.get_about()
         assert "Студент 4 курса ИУ5\nМладший фронтенд-разработчик в Облаке Mail" in about
 
-
-class TestAudience(BaseCase):
     def test_audience(self, request):
         credentials = request.getfixturevalue("credentials")
         self.main_page = self.login_page.login(*credentials)
