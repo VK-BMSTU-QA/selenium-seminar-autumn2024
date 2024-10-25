@@ -3,6 +3,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.firefox import GeckoDriverManager
+from ui.pages.base_vk_page import BaseVkPage
 from ui.pages.base_page import BasePage
 from ui.pages.main_page import MainPage
 
@@ -66,3 +67,8 @@ def base_page(driver):
 @pytest.fixture
 def main_page(driver):
     return MainPage(driver=driver)
+
+
+@pytest.fixture
+def vk_page(driver):
+    return BaseVkPage(driver=driver)
