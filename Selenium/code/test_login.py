@@ -1,57 +1,32 @@
 import pytest
-from _pytest.fixtures import FixtureRequest
 
-from ui.pages.base_page import BasePage
-
-
-class BaseCase:
-    authorize = True
-
-    @pytest.fixture(scope='function', autouse=True)
-    def setup(self, driver, config, request: FixtureRequest):
-        self.driver = driver
-        self.config = config
-
-        self.login_page = LoginPage(driver)
-        if self.authorize:
-            print('Do something for login')
-
-
-@pytest.fixture(scope='session')
-def credentials():
-        pass
-
-
-@pytest.fixture(scope='session')
-def cookies(credentials, config):
-        pass
-
-
-class LoginPage(BasePage):
-    url = 'https://education.vk.company'
-
-    def login(self, user, password):
-        return MainPage(self.driver)
-
-
-class MainPage(BasePage):
-    url = 'https://education.vk.company/feed/'
-
+from vk_education_base import BaseCase
 
 class TestLogin(BaseCase):
-    authorize = True
+    authorize = False
 
+    @pytest.mark.usefixtures('credentials')
     def test_login(self, credentials):
-        pass
+        self.login_page.login(credentials['email'], credentials['password'])
+        assert self.driver.current_url == 'https://education.vk.company/feed/'
 
 
 class TestLK(BaseCase):
 
-    def test_lk1(self):
-        pass
+    def test_lk1_login(self):
+        self.main_page.open_main()
+        assert self.driver.current_url == 'https://education.vk.company/feed/'
 
-    def test_lk2(self):
-        pass
+    @pytest.mark.usefixtures('find_student_test_data')
+    def test_lk2_find_student(self, find_student_test_data):
+        self.main_page.open_main()
+        self.main_page.find_student(find_student_test_data['username'])
+        assert self.driver.current_url == find_student_test_data['profile_link']
 
-    def test_lk3(self):
-        pass
+    def test_lk3_find_current_lesson_info(self):
+        current_window = self.driver.current_window_handle
+
+        self.main_page.find_current_lesson_info()
+
+        with self.switch_to_window(current=current_window, close=False):
+            assert "https://education.vk.company/curriculum/program/lesson/" in self.driver.current_url
