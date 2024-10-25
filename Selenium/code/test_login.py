@@ -2,6 +2,8 @@ from base import BaseCase
 
 
 class TestLogin(BaseCase):
+    authorize = False
+
     def test_login(self, request):
         credentials = request.getfixturevalue("credentials")
         self.login_page.login(*credentials)
@@ -9,10 +11,9 @@ class TestLogin(BaseCase):
 
 
 class TestLK(BaseCase):
-    def test_user_about_info(self, request):
-        credentials = request.getfixturevalue("credentials")
-        self.main_page = self.login_page.login(*credentials)
+    authorize = True
 
+    def test_user_about_info(self, request):
         # Открываем страницу "Люди"
         self.people_page = self.main_page.go_to_people_page()
 
@@ -22,9 +23,6 @@ class TestLK(BaseCase):
         assert "Студент 4 курса ИУ5\nМладший фронтенд-разработчик в Облаке Mail" in about
 
     def test_audience(self, request):
-        credentials = request.getfixturevalue("credentials")
-        self.main_page = self.login_page.login(*credentials)
-
         # Открываем страницу занятия 22 октября
         self.lesson_page = self.main_page.open_lesson("вт, 22 октября")
 
