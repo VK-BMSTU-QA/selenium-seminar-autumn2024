@@ -28,9 +28,10 @@ def cookies(credentials, config):
 
 
 class LoginPage(BasePage):
-    url = 'https://education.vk.company'
+    url = 'https://education.vk.company/'
 
     def login(self, user, password):
+        self.driver.get(self.url)
         return MainPage(self.driver)
 
 
