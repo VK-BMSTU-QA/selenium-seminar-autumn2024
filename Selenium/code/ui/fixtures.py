@@ -8,7 +8,7 @@ from ui.pages.base_page import BasePage
 from ui.pages.main_page import MainPage
 
 
-@pytest.fixture()
+@pytest.fixture(scope='session')
 def driver(config):
     browser = config['browser']
     url = config['url']
