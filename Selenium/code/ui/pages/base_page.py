@@ -13,10 +13,14 @@ class PageNotOpenedExeption(Exception):
 
 class BasePage(object):
     url = "https://education.vk.company/"
+    check_url = True
     locators = basic_locators.BasePageLocators()
     locators_main = basic_locators.MainPageLocators()
 
     def is_opened(self, timeout=15):
+        if not self.check_url:
+            return True
+
         started = time.time()
         while time.time() - started < timeout:
             if self.driver.current_url == self.url:

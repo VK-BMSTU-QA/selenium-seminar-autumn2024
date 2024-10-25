@@ -1,3 +1,5 @@
+import os
+
 import pytest
 from selenium import webdriver
 
@@ -14,4 +16,4 @@ def driver(config):
 
 @pytest.fixture()
 def credentials():
-    return ("TP_EMAIL", 'TP_PASSWORD')
+    return (os.getenv("TP_LOGIN"), os.getenv("TP_PASSWORD"))

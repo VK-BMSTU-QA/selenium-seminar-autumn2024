@@ -16,5 +16,4 @@ class LoginPage(BasePage):
         login_input.send_keys(username)
         password_input.send_keys(password)
         self.click(self.locators.LOGIN_SUBMIT_BTN_LOCATOR)
-
         return MainPage(self.driver)

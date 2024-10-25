@@ -16,4 +16,5 @@ class PeoplePage(BasePage):
         link = self.find(self.locators.USER_LINK)
         href = link.get_attribute("href")
         link.click()
-        return UserPage(self.driver, href)
+        assert self.driver.current_url == href
+        return UserPage(self.driver)

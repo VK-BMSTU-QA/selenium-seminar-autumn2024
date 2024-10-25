@@ -10,5 +10,8 @@ class BasePageLocators:
 
 
 class MainPageLocators(BasePageLocators):
-    ABOUT_PAGE_LINK = (By.CSS_SELECTOR, "a[href*='/people/']")
+    PEOPLE_PAGE_LINK = (By.CSS_SELECTOR, "a[href*='/people/']")
     LESSONS_SLIDER_LEFT_BTN = (By.CSS_SELECTOR, "div[style*='left: 0px;']")
+
+    def get_lesson_link(self, lesson_date):
+        return (By.XPATH, f"//div[contains(text(), '{lesson_date}')]/following-sibling::a")
