@@ -60,8 +60,10 @@ def cookies(credentials, config):
         pass
 
 
+
 class LoginPage(BaseVkPage):
     url = 'https://education.vk.company/'
+
 
     
     def login(self, user, password):
@@ -76,7 +78,9 @@ class LoginPage(BaseVkPage):
         return MainPage(self.driver)
 
 
+
 class MainPage(MainVkPage):
+
     url = 'https://education.vk.company/feed/'
 
 
