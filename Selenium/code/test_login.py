@@ -40,23 +40,24 @@ def cookies(credentials, config):
 
 class LoginPage(BasePage):
     url = 'https://education.vk.company/'
+    locators = basic_locators.LoginPageLocators
 
     def login(self, user, password):
         self.driver.get(self.url)
 
-        auth_button = self.driver.find_element(By.XPATH, "//button/a[contains(text(), 'вход / регистрация')]")
+        auth_button = self.find(self.locators.AUTH_BUTTON)
         auth_button.click()
 
-        continue_button = self.driver.find_element(By.XPATH, "//button[contains(text(), 'Продолжить с помощью почты и пароля')]")
+        continue_button = self.find(self.locators.CONTINUE_BUTTON)
         continue_button.click()
 
-        email_input = self.driver.find_element(By.ID, "email")
+        email_input = self.find(self.locators.EMAIL_INPUT)
         email_input.send_keys(user)
 
-        password_input = self.driver.find_element(By.ID, "password")
+        password_input = self.find(self.locators.PASSWORD_INPUT)
         password_input.send_keys(password)
 
-        login_button = self.driver.find_element(By.XPATH, "//button[contains(text(), 'Войти с паролем')]")
+        login_button = self.find(self.locators.LOGIN_BUTTON)
         login_button.click()
 
         return MainPage(self.driver)

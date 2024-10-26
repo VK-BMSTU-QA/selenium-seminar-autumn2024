@@ -8,6 +8,12 @@ class BasePageLocators:
     START_SHELL = (By.ID, 'start-shell')
     PYTHON_CONSOLE = (By.ID, 'hterm:row-nodes')
 
+class LoginPageLocators(BasePageLocators):
+    AUTH_BUTTON = (By.XPATH, "//button/a[contains(text(), 'вход / регистрация')]")
+    CONTINUE_BUTTON = (By.XPATH, "//button[contains(text(), 'Продолжить с помощью почты и пароля')]")
+    EMAIL_INPUT = (By.ID, "email")
+    PASSWORD_INPUT = (By.ID, "password")
+    LOGIN_BUTTON = (By.XPATH, "//button[contains(text(), 'Войти с паролем')]")
 
 class MainPageLocators(BasePageLocators):
     COMPREHENSIONS = (
