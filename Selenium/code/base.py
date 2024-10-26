@@ -3,9 +3,6 @@ from contextlib import contextmanager
 import pytest
 from ui.pages.land_page import LandingPage
 
-CLICK_RETRY = 3
-
-
 class BaseCase:
     driver = None
     authorize = True
