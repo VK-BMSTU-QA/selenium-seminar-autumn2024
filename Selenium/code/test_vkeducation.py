@@ -1,15 +1,11 @@
 import  os
 from base_vkeducation import BaseCase
-
 from ui.pages.base_page import BasePage
-
 import pytest
 from _pytest.fixtures import FixtureRequest
-
-
+from dotenv import load_dotenv
 
 feed_url = "https://education.vk.company/feed/"
-from dotenv import load_dotenv
 
 load_dotenv()
 
@@ -31,11 +27,6 @@ def student_data():
     student_data_dict = {'name': fullname, 'url': student_url}
 
     return student_data_dict
-
-
-class MainPage(BasePage):
-    url = "https://education.vk.company/feed/"
-
 
 class TestLogin(BaseCase):
     authorize = True
