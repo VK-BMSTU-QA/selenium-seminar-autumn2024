@@ -5,9 +5,9 @@ from typing import Literal
 import pytest
 from _pytest.fixtures import FixtureRequest
 from dotenv import load_dotenv
-from selenium.webdriver.common.by import By
 from selenium.webdriver.remote.webdriver import WebDriver
 
+from ui.locators.vk_edu_locators import LoginPageLocators, SchedulePageLocators, PeoplePageLocators
 from ui.pages.base_page import BasePage
 
 
@@ -15,11 +15,11 @@ class LoginPage(BasePage):
     url = 'https://education.vk.company/'
 
     def login(self, user, password):
-        self.click((By.CLASS_NAME, 'gtm-auth-header-btn'))
-        self.click((By.CLASS_NAME, 'gtm-signup-modal-link'))
-        self.find((By.ID, 'email')).send_keys(user)
-        self.find((By.ID, 'password')).send_keys(password)
-        self.click((By.CLASS_NAME, 'gtm-login-btn'))
+        self.click(LoginPageLocators.AUTH_OR_REG_BUTTON)
+        self.click(LoginPageLocators.SIGN_UP_BUTTON)
+        self.find(LoginPageLocators.EMAIL_INPUT).send_keys(user)
+        self.find(LoginPageLocators.PASSWORD_INPUT).send_keys(password)
+        self.click(LoginPageLocators.LOGIN_BUTTON)
         # ждем, когда загрузится следующая страница
         self.wait().until(lambda d: d.current_url != self.url and 'auth' not in d.current_url)
 
@@ -34,26 +34,26 @@ class SchedulePage(BasePage):
 
     def get_schedule(self, time_interval: Literal['all_time', 'two_weeks'] = 'all_time', subject: str = 'Обеспечение качества в разработке ПО') -> dict:
         if time_interval == 'two_weeks':
-            self.click((By.XPATH, '//*[@id="schedule-interval"]/li[1]/a'))
+            self.click(SchedulePageLocators.SCHEDULE_TWO_WEEKS_INTERVAL)
         else:
-            self.click((By.XPATH, '//*[@id="schedule-interval"]/li[2]/a'))
+            self.click(SchedulePageLocators.SCHEDULE_ALL_TIME_INTERVAL)
 
         if subject:
             # чтобы не ждать загрузки огромного расписания, конкретизируем его до выбранного предмета
-            self.click((By.XPATH, '//*[@id="react-schedule"]/div/div[1]/div/div/div[2]/div/div[2]'))  # открываем список предметов
-            self.click((By.XPATH, f'//*[contains(text(), "{subject}")]'))  # выбираем нужный предмет
+            self.click(SchedulePageLocators.SUBJECTS_LIST)  # открываем список предметов
+            self.click(SchedulePageLocators.SUBJECT_LIST_ELEM(subject))  # выбираем нужный предмет
 
         # у элемента должен пропасть класс loading
-        self.wait().until(lambda d: 'loading' not in self.find((By.XPATH, '//*[@id="react-schedule"]/div/div[2]/div[1]')).get_attribute('class'))
+        self.wait().until(lambda d: 'loading' not in self.find(SchedulePageLocators.SCHEDULE_TABLE).get_attribute('class'))
         time.sleep(0.5)  # на работу js, который подгружает расписание из полученного результата
 
         schedule = dict()
-        rows = self.driver.find_elements(By.CSS_SELECTOR, 'tr.schedule-timetable__item')
+        rows = self.driver.find_elements(*SchedulePageLocators.ROWS)
 
         for row in rows:
-            date = row.find_element(By.XPATH, './td[1]/p[1]/nobr/strong').text.strip()
-            event = row.find_element(By.XPATH, './td[3]/p/span[1]').text.strip()
-            location = row.find_element(By.XPATH, './td[3]/p/span[2]').text.strip()
+            date = row.find_element(*SchedulePageLocators.ROW_DATE).text.strip()
+            event = row.find_element(*SchedulePageLocators.ROW_EVENT).text.strip()
+            location = row.find_element(*SchedulePageLocators.ROW_LOCATION).text.strip()
 
             schedule[date] = {
                 'event': event,
@@ -66,15 +66,20 @@ class SchedulePage(BasePage):
 class PeoplePage(BasePage):
     url = 'https://education.vk.company/people/'
 
-    def search_people(self, name: str) -> list[str]:
-        self.find((By.XPATH, '//*[@id="content"]/div/div[1]/form/input[1]')).send_keys(name)
-        self.click((By.XPATH, '//*[@id="content"]/div/div[1]/form/input[2]'))
+    def search_people(self, name: str) -> list[tuple[str, str]]:
+        self.find(PeoplePageLocators.SEARCH_INPUT).send_keys(name)
+        self.click(PeoplePageLocators.SEARCH_BUTTON)
         # ждем, когда загрузится страница с результатами поиска
         time.sleep(8)
         result = []
-        rows = self.driver.find_elements(By.CSS_SELECTOR, 'td.cell-name')
+        rows = self.driver.find_elements(*PeoplePageLocators.ROWS)
         for row in rows:
-            result.append(row.find_element(By.XPATH, './div/p[2]/a').text)
+            result.append(
+                (
+                    row.find_element(*PeoplePageLocators.ROW_NAME).text,
+                    row.find_element(*PeoplePageLocators.ROW_DESCRIPTION).text
+                )
+            )
         return result
 
 
@@ -146,4 +151,5 @@ class TestLK(BaseCase):
         query = 'Кристина'
         # по заданию нужно найти друга, будем искать Кристину Буйдину среди всех студентов с таким именем
         people = self.people_page.search_people(query)
-        assert 'Кристина Буйдина' in people
+        # надпись "нажмите, чтобы развернуть" - не ссылка, а реальное описание в профиле у Кристины :)
+        assert ('Кристина Буйдина', '>> Нажмите, чтобы развернуть <<') in people
