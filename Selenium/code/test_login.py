@@ -1,7 +1,9 @@
 import os
 import time
+import allure
 import pytest
 from dotenv import load_dotenv
+from ui.locators import basic_locators
 from _pytest.fixtures import FixtureRequest
 from ui.pages.base_page import BasePage
 from selenium.webdriver.common.by import By
@@ -62,98 +64,55 @@ class LoginPage(BasePage):
 
 class MainPage(BasePage):
     url = 'https://education.vk.company/feed/'
+    locators = basic_locators.MainPageLocators
 
+    @allure.step('Click Search Icon')
     def click_search_icon(self):
-        search_icon = WebDriverWait(self.driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH,
-                                        "//li[contains(@class, 'js-show-search')]//a"))
-        )
-        search_icon.click()
+        self.click(self.locators.SEARCH_ICON)
 
+    @allure.step('Enter Search Query')
     def enter_search_query(self, query):
-        search_input = self.driver.find_element(By.XPATH, "//input[@name='query']")
-        search_input.send_keys(query)
-        search_input.send_keys(Keys.ENTER)
+        search_input = self.find(self.locators.SEARCH_INPUT)
+        search_input.send_keys(query + Keys.ENTER)
 
+    @allure.step('Click on User')
     def click_on_user(self, user_name):
-        user_element = WebDriverWait(self.driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH,
-                                        f"//p[contains(@class, 'realname')]/span[contains(text(), '{user_name}')]"))
-        )
-        user_element.click()
+        self.click(self.locators.USER_NAME(user_name))
 
     def get_user_info(self):
-        about_section = WebDriverWait(self.driver, 10).until(
-            EC.presence_of_element_located((By.XPATH,
-                                            "//div[contains(@class, 'right-block profile-about')]"))
-        )
+        about_section = self.find(self.locators.ABOUT_SECTION)
+        about_text = about_section.find_element(*self.locators.PROFILE_ABOUT_TEXT(1)).text
+        birthday_text = about_section.find_element(*self.locators.PROFILE_ABOUT_TEXT(2)).text
+        return {"about": about_text, "birthday": birthday_text}
 
-        about_text = about_section.find_element(By.XPATH, ".//div[contains(@class, 'profile-about-text')][1]").text
-        birthday_text = about_section.find_element(By.XPATH, ".//div[contains(@class, 'profile-about-text')][2]").text
-
-        return {
-            "about": about_text,
-            "birthday": birthday_text
-        }
-
+    @allure.step('Click Program')
     def click_program(self):
-        program_menu_item = WebDriverWait(self.driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH,
-                                        "//li[contains(@class, 'technopark__menu__item') and contains(@class, 'technopark__menu__item_160')]//a[contains(text(), 'Программа')]"))
-        )
-        program_menu_item.click()
+        self.click(self.locators.PROGRAM_MENU_ITEM)
 
+    @allure.step('Click Discipline')
     def click_discipline(self):
-        discipline_link = WebDriverWait(self.driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH,
-                                        "//a[contains(@class, 'discipline-card') and contains(., '#2291: Обеспечение качества в разработке ПО')]"))
-        )
-        discipline_link.click()
+        self.click(self.locators.DISCIPLINE_LINK)
 
+    @allure.step('Click Lessons')
     def click_lessons(self):
-        lessons_button = WebDriverWait(self.driver, 10).until(
-            EC.element_to_be_clickable(
-                (By.XPATH, "//li[contains(@class, 'discipline-nav')]//a[contains(text(), 'Занятия')]"))
-        )
-        lessons_button.click()
+        self.click(self.locators.LESSONS_BUTTON)
 
+    @allure.step('Click Lesson')
     def click_lesson(self, lesson_name):
-        lesson_link = WebDriverWait(self.driver, 10).until(
-            EC.element_to_be_clickable((By.XPATH, f"//a[contains(@class, 'lesson')]//span[contains(text(), '{lesson_name}')]"))
-        )
-        lesson_link.click()
+        self.click(self.locators.LESSON_LINK(lesson_name))
 
     def extract_lesson_info(self):
-        lesson_title = WebDriverWait(self.driver, 10).until(
-            EC.presence_of_element_located((By.CLASS_NAME, "lesson-title"))
-        ).text
-
-        lesson_date = WebDriverWait(self.driver, 10).until(
-            EC.presence_of_element_located((By.XPATH,
-                                            "//div[contains(@class, 'info-pair')]/strong[text()='Дата проведения']/following-sibling::span"))
-        ).text
-
-        lesson_description = WebDriverWait(self.driver, 20).until(
-            EC.visibility_of_element_located((By.XPATH,
-                                              "//div[contains(@class, 'section-text')][last()]/p"))
-        ).text
-
-        homework_description = WebDriverWait(self.driver, 10).until(
-            EC.presence_of_element_located((By.XPATH,
-                                            "//div[contains(@class, 'homework')]//h2[contains(@class, 'title')]"))
-        ).text
-
-        homework_deadline = WebDriverWait(self.driver, 10).until(
-            EC.presence_of_element_located((By.XPATH,
-                                            "//div[contains(@class, 'homework')]//span[contains(@class, 'status')]"))
-        ).text
-
+        lesson_title = self.find(self.locators.LESSON_TITLE).text
+        lesson_date = self.find(self.locators.LESSON_DATE).text
+        lesson_description = self.find(self.locators.LESSON_DESCRIPTION).text
+        homework_title = self.find(self.locators.HOMEWORK_TITLE).text
+        homework_deadline = self.find(self.locators.HOMEWORK_DEADLINE).text
         return {
             "title": lesson_title,
             "date": lesson_date,
             "description": lesson_description,
             "homework": {
-                "title": homework_description,
+                "title": homework_title,
                 "deadline": homework_deadline
             }
         }
