@@ -130,8 +130,8 @@ class TestMemberSearch(BaseCase):
         print("Обо мне:", user_info["about"])
         print("Дата рождения:", user_info["birthday"])
 
-        assert "Пользователь не заполнил раздел \"О себе\"" in user_info["about"]
-        assert "22 июля" in user_info["birthday"]
+        assert "Учусь на СГН3-71Б 😎" in user_info["about"]
+        assert "17 октября" in user_info["birthday"]
 
 class TestLessonPage(BaseCase):
     def test_lesson_page(self, credentials):
