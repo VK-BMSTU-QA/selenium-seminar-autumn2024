@@ -1,10 +1,6 @@
 import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from webdriver_manager.chrome import ChromeDriverManager
-from webdriver_manager.firefox import GeckoDriverManager
-from ui.pages.base_page import BasePage
-from ui.pages.main_page import MainPage
 
 
 @pytest.fixture()
@@ -27,9 +23,12 @@ def driver(config):
             desired_capabilities=capabilities
         )
     elif browser == 'chrome':
-        driver = webdriver.Chrome(executable_path=ChromeDriverManager().install())
-    elif browser == 'firefox':
-        driver = webdriver.Firefox(executable_path=GeckoDriverManager().install())
+        options.add_argument("--no-sandbox")
+        options.add_argument("--disable-dev-shm-usage")
+        driver = webdriver.Chrome(
+            executable_path='./chromedriver-linux64/chromedriver',
+            options=options
+        )
     else:
         raise RuntimeError(f'Unsupported browser: "{browser}"')
     driver.get(url)
@@ -40,9 +39,8 @@ def driver(config):
 
 def get_driver(browser_name):
     if browser_name == 'chrome':
-        browser = webdriver.Chrome(executable_path=ChromeDriverManager().install())
-    elif browser_name == 'firefox':
-        browser = webdriver.Firefox(executable_path=GeckoDriverManager().install())
+        browser = webdriver.Chrome(
+            executable_path='./chromedriver-linux64/chromedriver')
     else:
         raise RuntimeError(f'Unsupported browser: "{browser_name}"')
     browser.maximize_window()
@@ -56,13 +54,3 @@ def all_drivers(config, request):
     browser.get(url)
     yield browser
     browser.quit()
-
-
-@pytest.fixture
-def base_page(driver):
-    return BasePage(driver=driver)
-
-
-@pytest.fixture
-def main_page(driver):
-    return MainPage(driver=driver)
