@@ -1,57 +1,31 @@
-import pytest
-from _pytest.fixtures import FixtureRequest
-
-from ui.pages.base_page import BasePage
-
-
-class BaseCase:
-    authorize = True
-
-    @pytest.fixture(scope='function', autouse=True)
-    def setup(self, driver, config, request: FixtureRequest):
-        self.driver = driver
-        self.config = config
-
-        self.login_page = LoginPage(driver)
-        if self.authorize:
-            print('Do something for login')
-
-
-@pytest.fixture(scope='session')
-def credentials():
-        pass
-
-
-@pytest.fixture(scope='session')
-def cookies(credentials, config):
-        pass
-
-
-class LoginPage(BasePage):
-    url = 'https://education.vk.company'
-
-    def login(self, user, password):
-        return MainPage(self.driver)
-
-
-class MainPage(BasePage):
-    url = 'https://education.vk.company/feed/'
+from base import BaseCase
 
 
 class TestLogin(BaseCase):
-    authorize = True
+    authorize = False
 
-    def test_login(self, credentials):
-        pass
+    def test_login(self, request):
+        credentials = request.getfixturevalue("credentials")
+        self.login_page.login(*credentials)
+        assert "Лента" in self.driver.title
 
 
 class TestLK(BaseCase):
+    authorize = True
 
-    def test_lk1(self):
-        pass
+    def test_user_about_info(self):
+        # Открываем страницу "Люди"
+        self.people_page = self.main_page.go_to_people_page()
 
-    def test_lk2(self):
-        pass
+        # Открываем страницу пользователя с фамилией "Михалёв"
+        self.user_page = self.people_page.find_user("Михалёв")
+        about = self.user_page.get_about()
+        assert "Студент 4 курса ИУ5\nМладший фронтенд-разработчик в Облаке Mail" in about
 
-    def test_lk3(self):
-        pass
+    def test_audience(self):
+        # Открываем страницу занятия 22 октября
+        self.lesson_page = self.main_page.open_lesson("вт, 22 октября")
+
+        # Проверяем аудиторию
+        audition = self.lesson_page.get_audition()
+        assert "Онлайн" in audition
