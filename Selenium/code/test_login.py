@@ -33,11 +33,6 @@ def credentials():
     }
 
 
-@pytest.fixture(scope='session')
-def cookies(credentials, config):
-    pass
-
-
 class LoginPage(BasePage):
     url = 'https://education.vk.company/'
     locators = basic_locators.LoginPageLocators
@@ -126,9 +121,9 @@ class TestLogin(BaseCase):
         assert main_page.url == MainPage.url, "Не удалось войти!"
 
 
-class TestLK1(BaseCase):
+class TestMemberSearch(BaseCase):
 
-    def test_lk1(self, credentials):
+    def test_member_search(self, credentials):
         main_page = self.login_page.login(credentials['username'], credentials['password'])
 
         main_page.click_search_icon()
@@ -139,6 +134,8 @@ class TestLK1(BaseCase):
 
         user_info = main_page.get_user_info()
 
+        assert self.driver.current_url == "https://education.vk.company/profile/user_165480/"
+
         print("Информация о пользователе:")
         print("Обо мне:", user_info["about"])
         print("Дата рождения:", user_info["birthday"])
@@ -147,9 +144,9 @@ class TestLK1(BaseCase):
         assert "22 июля" in user_info["birthday"]
 
 
-class TestLK2(BaseCase):
+class TestLessonPage(BaseCase):
 
-    def test_lk2(self, credentials):
+    def test_lesson_page(self, credentials):
         main_page = self.login_page.login(credentials['username'], credentials['password'])
 
         main_page.click_program()
@@ -161,6 +158,8 @@ class TestLK2(BaseCase):
         main_page.click_lesson("End-to-End тесты на Python")
 
         lesson_info = main_page.get_lesson_info()
+
+        assert self.driver.current_url == "https://education.vk.company/curriculum/program/lesson/28796/"
 
         print("Информация о занятии:")
         print("Тема:", lesson_info["title"])
