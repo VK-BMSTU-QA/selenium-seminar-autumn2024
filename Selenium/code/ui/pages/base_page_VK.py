@@ -11,7 +11,7 @@ class PageNotOpenedExeption(Exception):
     pass
 
 
-class BasePage(object):
+class BasePageVK(object):
 
     locators = basic_locators.BasePageLocators()
     locators_main = basic_locators.MainPageLocators()
