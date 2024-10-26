@@ -17,7 +17,7 @@ class BasePage(object):
     locators_main = basic_locators.MainPageLocators()
     url = 'https://www.python.org/'
 
-    def is_opened(self, timeout=40):
+    def is_opened(self, timeout=15):
         started = time.time()
         while time.time() - started < timeout:
             if self.driver.current_url == self.url:
@@ -50,7 +50,7 @@ class BasePage(object):
 
 
     @allure.step('Click')
-    def click(self, locator, timeout=None) -> WebElement:
+    def click(self, locator, timeout=10) -> WebElement:
         self.find(locator, timeout=timeout)
         elem = self.wait(timeout).until(EC.element_to_be_clickable(locator))
         elem.click()

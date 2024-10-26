@@ -1,8 +1,11 @@
 import time
 import pytest
 from _pytest.fixtures import FixtureRequest
+
 import logindata
+from base import BaseCase
 from ui.pages.base_page import BasePage
+
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -27,23 +30,22 @@ class BaseCase:
 
 @pytest.fixture(scope='session')
 def credentials():
-    return {
-        'email': logindata.email,
-        'password': logindata.password
+        return {
+            'email': logindata.email,
+            'password': logindata.password
     }
-
 
 
 @pytest.fixture(scope='function')
 def cookies(driver, credentials):
     login_page = LoginPage(driver)
     login_page.login(credentials['email'], credentials['password'])
-    
+
     WebDriverWait(driver, 10).until(
         EC.url_to_be(MainPage.url)
     )
     assert driver.current_url == MainPage.url, "URL не соответствует ожидаемому"
-    
+
     cookies = driver.get_cookies()
     return cookies
 
@@ -51,24 +53,25 @@ def cookies(driver, credentials):
 class LoginPage(BasePage):
     url = 'https://education.vk.company/'
 
+    
     def login(self, email, password):
-        self.click((By.CLASS_NAME, 'gtm-auth-header-btn'))
+        self.click(self.locators.AUTH_HEADER_BUTTON)
         WebDriverWait(self.driver, 10).until(
-            EC.element_to_be_clickable((By.CLASS_NAME, 'gtm-signup-modal-link'))
+            EC.element_to_be_clickable(self.locators.SIGNUP_MODAL_LINK)
         ).click()
-        
+    
         email_elem = WebDriverWait(self.driver, 10).until(
-            EC.presence_of_element_located((By.ID, 'email'))
+            EC.presence_of_element_located(self.locators.EMAIL_INPUT)
         )
         email_elem.send_keys(email)
-        
+    
         password_elem = WebDriverWait(self.driver, 10).until(
-            EC.presence_of_element_located((By.ID, 'password'))
+            EC.presence_of_element_located(self.locators.PASSWORD_INPUT)
         )
         password_elem.send_keys(password)
-        
+    
         WebDriverWait(self.driver, 10).until(
-            EC.element_to_be_clickable((By.CLASS_NAME, 'gtm-login-btn'))
+            EC.element_to_be_clickable(self.locators.LOGIN_BUTTON)
         ).click()
 
 
@@ -79,20 +82,20 @@ class MainPage(BasePage):
 class TestLogin(BaseCase):
     authorize = True
 
-    # @pytest.mark.skip('skip')
+    @pytest.mark.skip('skip')
     def test_login(self, credentials):
         self.login_page.login(credentials['email'], credentials['password'])
-        
+
         WebDriverWait(self.login_page.driver, 10).until(
             EC.url_to_be(MainPage.url)
         )
         assert self.login_page.driver.current_url == MainPage.url, "URL не соответствует ожидаемому"
-        
+
         assert 1 == 1
-        
+
 
 class TestLK(BaseCase):
-    
+
     @pytest.mark.skip('skip')
     def test_lk2(self, cookies):
         self.driver.get(MainPage.url)
@@ -100,17 +103,14 @@ class TestLK(BaseCase):
             self.driver.add_cookie(cookie)
         self.driver.refresh()
 
-        # Поиск однокурсника на портале
-        search_button = WebDriverWait(self.driver, 10).until(
-            EC.element_to_be_clickable(self.login_page.locators.SEARCH_BUTTON)
-        )
-        search_button.click()
+        self.login_page.click(self.locators.SEARCH_BUTTON)
 
+        
         search_input = WebDriverWait(self.driver, 10).until(
             EC.presence_of_element_located(self.login_page.locators.SEARCH_INPUT)
-        )
+         )
         search_input.send_keys("Батовкин Александр")
-        
+
         search_input.send_keys(Keys.ENTER)
 
         # Проверка
@@ -125,7 +125,7 @@ class TestLK(BaseCase):
 
         time.sleep(2)
 
-    @pytest.mark.skip('skip')
+    # @pytest.mark.skip('skip')
     def test_lk3(self, cookies):
         self.driver.get(MainPage.url)
         for cookie in cookies:
@@ -133,16 +133,11 @@ class TestLK(BaseCase):
         self.driver.refresh()
 
         # зайти в расписание
-        schedule_button = WebDriverWait(self.driver, 10).until(
-            EC.element_to_be_clickable(self.locators.SCHEDULE_BUTTON)
-        )
-        schedule_button.click()
+        self.login_page.click(self.locators.SCHEDULE_BUTTON)
+
         time.sleep(2)
         # кнопка "Весь семестр"
-        semester_button = WebDriverWait(self.driver, 10).until(
-            EC.element_to_be_clickable(self.locators.SEMESTER_BUTTON)
-        )
-        semester_button.click()
+        self.login_page.click(self.locators.SEMESTER_BUTTON)
         time.sleep(10)
 
         schedule_items = WebDriverWait(

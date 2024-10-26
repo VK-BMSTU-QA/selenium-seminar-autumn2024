@@ -23,7 +23,7 @@ def driver(config):
             capabilities['enableVNC'] = True
         driver = webdriver.Remote(
             'http://127.0.0.1:4444/wd/hub',
-            options=options,
+            options=options
         )
     elif browser == 'chrome':
         driver = webdriver.Chrome()
