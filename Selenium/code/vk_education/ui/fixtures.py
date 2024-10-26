@@ -64,11 +64,6 @@ def all_drivers(config, request):
     browser.quit()
 
 
-@pytest.fixture
-def base_page(driver):
-    return BasePage(driver=driver)
-
-
 @pytest.fixture(scope='session')
 def credentials():
     credentials = dotenv_values(".credentials_env")
