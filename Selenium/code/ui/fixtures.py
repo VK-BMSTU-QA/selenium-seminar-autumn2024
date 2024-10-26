@@ -75,11 +75,6 @@ def credentials():
 
 
 @pytest.fixture(scope='session')
-def cookies(credentials, config):
-    pass
-
-
-@pytest.fixture(scope='session')
 def find_student_test_data():
     with open('Selenium/code/files/find_student_test_data.json', 'r') as file:
         return json.load(file)
