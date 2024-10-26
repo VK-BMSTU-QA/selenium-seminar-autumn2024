@@ -1,15 +1,14 @@
 from contextlib import contextmanager
 
 import pytest
-from _pytest.fixtures import FixtureRequest
 from ui.pages.base_page import BasePage
-from ui.pages.main_page import MainPage
 
 CLICK_RETRY = 3
 
 
 class BaseCase:
     driver = None
+    authorize = True
 
     @contextmanager
     def switch_to_window(self, current, close=False):
@@ -23,9 +22,12 @@ class BaseCase:
         self.driver.switch_to.window(current)
 
     @pytest.fixture(scope='function', autouse=True)
-    def setup(self, driver, config, request: FixtureRequest):
+    def setup(self, driver, config, credentials):
         self.driver = driver
         self.config = config
 
         self.base_page: BasePage = (request.getfixturevalue('base_page'))
-        self.main_page: MainPage = (request.getfixturevalue('main_page'))
+        if self.authorize:
+            email = credentials['EMAIL']
+            password = credentials['PASSWORD']
+            self.main_page = self.base_page.login(email, password)

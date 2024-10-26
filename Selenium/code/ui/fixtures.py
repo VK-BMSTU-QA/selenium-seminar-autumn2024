@@ -66,3 +66,14 @@ def base_page(driver):
 @pytest.fixture
 def main_page(driver):
     return MainPage(driver=driver)
+
+@pytest.fixture(scope='session')
+def credentials():
+    credentials = dotenv_values(".credentials_env")
+    credentials = dict(credentials)
+    return credentials
+
+
+@pytest.fixture(scope='session')
+def student_test_data():
+    return {"username": "Родион Толкачев", "profile_link": "https://education.vk.company/profile/user_202628/"}

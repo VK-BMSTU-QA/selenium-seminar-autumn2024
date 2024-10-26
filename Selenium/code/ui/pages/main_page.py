@@ -1,18 +1,24 @@
-from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
 
-import allure
-from ui.locators import basic_locators
+from ui.locators.basic_locators import MainPageLocators
 from ui.pages.base_page import BasePage
-from ui.pages.events_page import EventsPage
 
 
 class MainPage(BasePage):
 
-    locators = basic_locators.MainPageLocators()
+    locators = MainPageLocators
+    url = 'https://education.vk.company/feed/'
+    default_timeout = 10
 
-    @allure.step("Step 2")
-    def go_to_events_page(self):
-        events_button = self.find(self.locators.EVENTS)
-        # self.click(events_button)
-        self.click((By.ID, 'events'))
-        return EventsPage(self.driver)
+    def open_main(self):
+        self.driver.get(self.url)
+
+    def find_student(self, student_name):
+        self.click(self.locators.QUERY_BUTTON, timeout=self.default_timeout)
+        self.input(self.locators.QUERY_INPUT, student_name, timeout=self.default_timeout)
+        self.input(self.locators.QUERY_INPUT, Keys.ENTER, timeout=self.default_timeout)
+        self.click(self.locators.PROFILE_NAME_LOCATOR, timeout=self.default_timeout)
+
+    def find_current_lesson_info(self):
+        self.click(self.locators.SCHEDULE_LINK, timeout=self.default_timeout)
+        self.click(self.locators.CURRENT_LESSON_LOCATOR,timeout=self.default_timeout)
