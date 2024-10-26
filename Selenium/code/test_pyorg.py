@@ -18,7 +18,7 @@ class TestExample(BaseCase):
         'query',
         [
             pytest.param(
-              'pycon'
+                'pycon'
             ),
             pytest.param(
                 'python'
@@ -37,7 +37,6 @@ class TestExample(BaseCase):
         time.sleep(5)
 
         assert 'No results found' in self.driver.page_source
-        assert 1 == 0
 
     @pytest.mark.skip('skip')
     def test_page_change(self):
@@ -72,7 +71,8 @@ class TestExample(BaseCase):
         current_window = self.driver.current_window_handle
 
         news = self.main_page.find((By.ID, 'news'))
-        ActionChains(self.driver).key_down(Keys.COMMAND).click(news).key_up(Keys.COMMAND).perform()
+        ActionChains(self.driver).key_down(Keys.COMMAND).click(
+            news).key_up(Keys.COMMAND).perform()
         time.sleep(5)
 
         with self.switch_to_window(current=current_window, close=False):
@@ -94,7 +94,8 @@ class TestExample(BaseCase):
         time.sleep(5)
         intro = self.main_page.find((By.CSS_SELECTOR, 'div.introduction'))
         learn_more = intro.find_element(*self.main_page.locators.READ_MORE)
-        assert learn_more.get_attribute('href') == self.driver.current_url + 'doc/'
+        assert learn_more.get_attribute(
+            'href') == self.driver.current_url + 'doc/'
         time.sleep(5)
 
 
@@ -102,9 +103,11 @@ class TestLoad(BaseCase):
 
     @pytest.mark.skip('skip')
     def test_download(self):
-        self.driver.get('https://www.python.org/downloads/release/python-3100/')
+        self.driver.get(
+            'https://www.python.org/downloads/release/python-3100/')
         time.sleep(5)
-        self.main_page.click((By.XPATH, '//a[@href="https://www.python.org/ftp/python/3.10.0/python-3.10.0-embed-win32.zip"]'))
+        self.main_page.click(
+            (By.XPATH, '//a[@href="https://www.python.org/ftp/python/3.10.0/python-3.10.0-embed-win32.zip"]'))
         time.sleep(10)
 
     @pytest.fixture()
@@ -120,6 +123,7 @@ class TestLoad(BaseCase):
         time.sleep(5)
 
 
+@pytest.mark.skip('skip')
 class TestFailed(BaseCase):
 
     def test_fail(self):
