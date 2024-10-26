@@ -3,6 +3,8 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.firefox import GeckoDriverManager
+from selenium.webdriver.chrome.service import Service as ChromeService
+from selenium.webdriver.firefox.service import Service as FirefoxService
 from ui.pages.base_page import BasePage
 from ui.pages.main_page import MainPage
 
@@ -27,9 +29,11 @@ def driver(config):
             desired_capabilities=capabilities
         )
     elif browser == 'chrome':
-        driver = webdriver.Chrome(executable_path=ChromeDriverManager().install())
+        service = ChromeService(ChromeDriverManager().install())
+        driver = webdriver.Chrome(service=service, options=options)
     elif browser == 'firefox':
-        driver = webdriver.Firefox(executable_path=GeckoDriverManager().install())
+        service = FirefoxService(GeckoDriverManager().install())
+        driver = webdriver.Firefox(service=service)
     else:
         raise RuntimeError(f'Unsupported browser: "{browser}"')
     driver.get(url)
