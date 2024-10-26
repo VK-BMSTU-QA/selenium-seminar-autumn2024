@@ -1,3 +1,4 @@
+import json
 import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -66,3 +67,14 @@ def base_page(driver):
 @pytest.fixture
 def main_page(driver):
     return MainPage(driver=driver)
+
+@pytest.fixture(scope='session')
+def credentials():
+    with open('Selenium/code/files/userdata.json', 'r') as file:
+        return json.load(file)
+
+
+@pytest.fixture(scope='session')
+def find_student_test_data():
+    with open('Selenium/code/files/find_student_test_data.json', 'r') as file:
+        return json.load(file)
