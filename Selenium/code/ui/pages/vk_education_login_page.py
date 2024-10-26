@@ -15,5 +15,6 @@ class LoginPage(BasePage):
         self.input(self.locators.EMAIL_INPUT, user, timeout=10)
         self.input(self.locators.PASSWORD_INPUT, password, timeout=10)
         self.click(self.locators.SUBMIT_BUTTON, timeout=10)
+        
         return MainPage(self.driver)
     
