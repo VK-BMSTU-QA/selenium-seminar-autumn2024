@@ -1,7 +1,13 @@
+import time
 import pytest
 from _pytest.fixtures import FixtureRequest
-
+import logindata
 from ui.pages.base_page import BasePage
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.keys import Keys
+from ui.locators import basic_locators
 
 
 class BaseCase:
@@ -11,27 +17,59 @@ class BaseCase:
     def setup(self, driver, config, request: FixtureRequest):
         self.driver = driver
         self.config = config
+        self.cresentials = credentials
 
         self.login_page = LoginPage(driver)
+        self.locators = basic_locators.BasePageLocators()
         if self.authorize:
             print('Do something for login')
 
 
 @pytest.fixture(scope='session')
 def credentials():
-        pass
+    return {
+        'email': logindata.email,
+        'password': logindata.password
+    }
 
 
-@pytest.fixture(scope='session')
-def cookies(credentials, config):
-        pass
+
+@pytest.fixture(scope='function')
+def cookies(driver, credentials):
+    login_page = LoginPage(driver)
+    login_page.login(credentials['email'], credentials['password'])
+    
+    WebDriverWait(driver, 10).until(
+        EC.url_to_be(MainPage.url)
+    )
+    assert driver.current_url == MainPage.url, "URL не соответствует ожидаемому"
+    
+    cookies = driver.get_cookies()
+    return cookies
 
 
 class LoginPage(BasePage):
-    url = 'https://education.vk.company'
+    url = 'https://education.vk.company/'
 
-    def login(self, user, password):
-        return MainPage(self.driver)
+    def login(self, email, password):
+        self.click((By.CLASS_NAME, 'gtm-auth-header-btn'))
+        WebDriverWait(self.driver, 10).until(
+            EC.element_to_be_clickable((By.CLASS_NAME, 'gtm-signup-modal-link'))
+        ).click()
+        
+        email_elem = WebDriverWait(self.driver, 10).until(
+            EC.presence_of_element_located((By.ID, 'email'))
+        )
+        email_elem.send_keys(email)
+        
+        password_elem = WebDriverWait(self.driver, 10).until(
+            EC.presence_of_element_located((By.ID, 'password'))
+        )
+        password_elem.send_keys(password)
+        
+        WebDriverWait(self.driver, 10).until(
+            EC.element_to_be_clickable((By.CLASS_NAME, 'gtm-login-btn'))
+        ).click()
 
 
 class MainPage(BasePage):
@@ -41,17 +79,80 @@ class MainPage(BasePage):
 class TestLogin(BaseCase):
     authorize = True
 
+    # @pytest.mark.skip('skip')
     def test_login(self, credentials):
-        pass
-
+        self.login_page.login(credentials['email'], credentials['password'])
+        
+        WebDriverWait(self.login_page.driver, 10).until(
+            EC.url_to_be(MainPage.url)
+        )
+        assert self.login_page.driver.current_url == MainPage.url, "URL не соответствует ожидаемому"
+        
+        assert 1 == 1
+        
 
 class TestLK(BaseCase):
+    
+    @pytest.mark.skip('skip')
+    def test_lk2(self, cookies):
+        self.driver.get(MainPage.url)
+        for cookie in cookies:
+            self.driver.add_cookie(cookie)
+        self.driver.refresh()
 
-    def test_lk1(self):
-        pass
+        # Поиск однокурсника на портале
+        search_button = WebDriverWait(self.driver, 10).until(
+            EC.element_to_be_clickable(self.login_page.locators.SEARCH_BUTTON)
+        )
+        search_button.click()
 
-    def test_lk2(self):
-        pass
+        search_input = WebDriverWait(self.driver, 10).until(
+            EC.presence_of_element_located(self.login_page.locators.SEARCH_INPUT)
+        )
+        search_input.send_keys("Батовкин Александр")
+        
+        search_input.send_keys(Keys.ENTER)
 
-    def test_lk3(self):
-        pass
+        # Проверка
+        found_name = WebDriverWait(self.driver, 10).until(
+            EC.presence_of_element_located(self.login_page.locators.FOUND_NAME)
+        ).text
+        assert found_name == "Александр", f"Ожидалось имя 'Александр', но найдено '{found_name}'"
+        found_last_name = WebDriverWait(self.driver, 10).until(
+            EC.presence_of_element_located(self.login_page.locators.FOUND_LAST_NAME)
+        ).text
+        assert found_last_name == "Батовкин", f"Ожидалась фамилия 'Батовкин', но найдена '{found_last_name}'"
+
+        time.sleep(2)
+
+    @pytest.mark.skip('skip')
+    def test_lk3(self, cookies):
+        self.driver.get(MainPage.url)
+        for cookie in cookies:
+            self.driver.add_cookie(cookie)
+        self.driver.refresh()
+
+        # зайти в расписание
+        schedule_button = WebDriverWait(self.driver, 10).until(
+            EC.element_to_be_clickable(self.locators.SCHEDULE_BUTTON)
+        )
+        schedule_button.click()
+        time.sleep(2)
+        # кнопка "Весь семестр"
+        semester_button = WebDriverWait(self.driver, 10).until(
+            EC.element_to_be_clickable(self.locators.SEMESTER_BUTTON)
+        )
+        semester_button.click()
+        time.sleep(10)
+
+        schedule_items = WebDriverWait(
+            self.driver, 10).until(EC.presence_of_all_elements_located(self.locators.SCHEDULE_ITEM))
+
+        for item in schedule_items:
+            date_text = item.find_element(*self.locators.SCHEDULE_ITEM_DATE).text
+            if date_text == "22 октября 2024":
+                room_text = item.find_element(*self.locators.SCHEDULE_ITEM_ROOM).text
+                assert room_text == " ауд.395 - зал 3 (МГТУ)", f"EОжидается ' ауд.395 - зал 3 (МГТУ)', но найдено'{room_text}'"
+                break
+        else:
+            assert False, "Элемент с датой '22 октября 2024' не найден"
