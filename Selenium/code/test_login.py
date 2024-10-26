@@ -25,8 +25,9 @@ class TestLK(BaseCase):
 
     def test_lk3_find_current_lesson_info(self):
         current_window = self.driver.current_window_handle
+        lesson_data = self.main_page.find_current_lesson_info()
 
-        self.main_page.find_current_lesson_info()
+        assert lesson_data != None
 
         with self.switch_to_window(current=current_window, close=False):
             assert "https://education.vk.company/curriculum/program/lesson/" in self.driver.current_url

@@ -20,3 +20,5 @@ class MainPage(BasePage):
     def find_current_lesson_info(self):
         self.click(self.locators.SCHEDULE_BUTTON, timeout=10)
         self.click(self.locators.CURRENT_LESSON_LOCATOR,timeout=100)
+
+        return self.find(self.locators.CURRENT_LESSON_LOCATOR).text

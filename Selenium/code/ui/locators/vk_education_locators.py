@@ -15,3 +15,4 @@ class MainPageLocators:
 
     SCHEDULE_BUTTON = (By.LINK_TEXT, 'Расписание')
     CURRENT_LESSON_LOCATOR = (By.XPATH, '//table[@class="schedule-timetable"]/tbody/tr[1]/td[3]/a/strong')
+    
