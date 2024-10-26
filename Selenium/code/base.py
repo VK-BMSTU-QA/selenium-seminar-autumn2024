@@ -1,7 +1,7 @@
 from contextlib import contextmanager
 
 import pytest
-from ui.pages.base_page import BasePage
+from ui.pages.land_page import LandingPage
 
 CLICK_RETRY = 3
 
@@ -26,7 +26,7 @@ class BaseCase:
         self.driver = driver
         self.config = config
 
-        self.base_page: BasePage = (request.getfixturevalue('base_page'))
+        self.base_page: BasePage = LandingPage(driver)
         if self.authorize:
             email = credentials['EMAIL']
             password = credentials['PASSWORD']

@@ -1,10 +1,10 @@
-from ui.locators.basic_locators import MainPageLocators
+from ui.locators.basic_locators import BasePageLocators
 from ui.pages.base_page import BasePage
 from ui.pages.main_page import MainPage
 
 class LandingPage(BasePage):
 
-    locators = LandingPageLocators
+    locators = BasePageLocators
     url = 'https://education.vk.company/'
 
     def login(self, email, password):
