@@ -4,7 +4,6 @@ import pytest
 import json
 import os
 from _pytest.fixtures import FixtureRequest
-from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
@@ -59,6 +58,11 @@ class LoginPage(BasePage):
 class MainPage(BasePage):
     url = 'https://education.vk.company/feed/'
 
+class SchedulePage(BasePage):
+    url = 'https://education.vk.company/schedule/'
+
+class PersonPage(BasePage):
+    url = 'https://education.vk.company/people/'
 
 class TestLogin(BaseCase):
     @pytest.fixture(autouse=True)
@@ -77,37 +81,40 @@ class TestLK(BaseCase):
             self.driver.add_cookie(cookie)
 
     @pytest.fixture()
-    def setup_main_page(self, driver):
-        self.main_page = MainPage(self.driver)
+    def setup_schedule_page(self, driver):
+        self.schedule_page = SchedulePage(self.driver)
+
+    @pytest.fixture()
+    def setup_person_page(self, driver):
+        self.person_page = PersonPage(self.driver)
 
     # 2. найти человека в лк и получить информацию "о себе"
     def test_lk1(self, request):
-        request.getfixturevalue('setup_main_page')
-        search_button = self.main_page.find(self.main_page.locators_main.SEARCH_BUTTON)
-        search_button.click()
-        search_field = self.main_page.find(self.main_page.locators_main.SEARCH_FIELD)
+        request.getfixturevalue('setup_person_page')
+        people_button = self.person_page.find(self.person_page.locators_person.PEOPLE_BUTTON)
+        people_button.click()
+        search_field = self.person_page.find(self.person_page.locators_person.SEARCH_FIELD)
         search_field.send_keys("Александр Горбатов")
         search_field.send_keys(Keys.ENTER)
-        person_block = self.main_page.find(self.main_page.locators_main.PERSON_BLOCK)
+        person_block = self.person_page.find(self.person_page.locators_person.PERSON_BLOCK)
         person_block.click()
-        about_info = self.main_page.find(self.main_page.locators_main.ABOUT_INFO)
+        about_info = self.person_page.find(self.person_page.locators_person.ABOUT_INFO)
         assert about_info.text == "Пользователь не заполнил раздел \"О себе\""
 
     # 3. узнать аудиторию занятия по QA 22.10.2024
     def test_lk2(self, request):
-        request.getfixturevalue('setup_main_page')
-        schedule_button = self.main_page.find(self.main_page.locators_main.SCHEDULE_BUTTON)
+        request.getfixturevalue('setup_schedule_page')
+        schedule_button = self.schedule_page.find(self.schedule_page.locators_schedule.SCHEDULE_BUTTON)
         schedule_button.click()
-        time.sleep(3)
-        semester_interval = self.main_page.find(self.main_page.locators_main.SEMESTER_INTERVAL)
+        time.sleep(2)
+        semester_interval = self.schedule_page.find(self.schedule_page.locators_schedule.SEMESTER_INTERVAL)
         semester_interval.click()
-        dropdown = self.main_page.find(self.main_page.locators_main.DROPDOWN)
+        dropdown = self.schedule_page.find(self.schedule_page.locators_schedule.DROPDOWN)
         dropdown.click()
-        my_groups_option = self.main_page.find(self.main_page.locators_main.MY_GROUPS_OPTION)
+        my_groups_option = self.schedule_page.find(self.schedule_page.locators_schedule.MY_GROUPS_OPTION)
         my_groups_option.click()
-        lesson_block = self.main_page.find(self.main_page.locators_main.LESSON_BLOCK)
+        lesson_block = self.schedule_page.find(self.schedule_page.locators_schedule.LESSON_BLOCK)
         lesson_block.click()
         self.driver.switch_to.window(self.driver.window_handles[1])
-        class_info = self.main_page.find(self.main_page.locators_main.CLASS_INFO)
-        time.sleep(1)
+        class_info = self.schedule_page.find(self.schedule_page.locators_schedule.CLASS_INFO)
         assert class_info.text == "Аудитория ауд.395 - зал 3 (МГТУ) и Онлайн (ссылки пока нет)"

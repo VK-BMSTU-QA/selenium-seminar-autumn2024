@@ -15,6 +15,8 @@ class BasePage(object):
 
     locators = basic_locators.BasePageLocators()
     locators_main = basic_locators.MainPageLocators()
+    locators_person = basic_locators.PersonPageLocators()
+    locators_schedule = basic_locators.SchedulePageLocators()
     url = 'https://www.python.org/'
 
     def is_opened(self, timeout=60):
