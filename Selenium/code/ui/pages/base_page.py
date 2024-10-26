@@ -14,10 +14,10 @@ class PageNotOpenedExeption(Exception):
 class BasePage(object):
 
     locators = basic_locators.BasePageLocators()
-    locators_main = basic_locators.MainPageLocators()
-    url = 'https://www.python.org/'
+    url = 'https://education.vk.company/'
+    default_timeout = 5
 
-    def is_opened(self, timeout=15):
+    def is_opened(self, timeout=default_timeout):
         started = time.time()
         while time.time() - started < timeout:
             if self.driver.current_url == self.url:
@@ -44,13 +44,13 @@ class BasePage(object):
         go_button.click()
         self.my_assert()
 
-    @allure.step("Step 1")
-    def my_assert(self):
-        assert 1 == 1
-
-
     @allure.step('Click')
     def click(self, locator, timeout=None) -> WebElement:
         self.find(locator, timeout=timeout)
         elem = self.wait(timeout).until(EC.element_to_be_clickable(locator))
         elem.click()
+
+    @allure.step('Input')
+    def input(self, locator, data, timeout=None):
+        elem = self.find(locator, timeout=timeout)
+        elem.send_keys(data)
