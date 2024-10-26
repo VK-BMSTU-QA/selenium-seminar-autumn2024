@@ -9,22 +9,6 @@ from ui.pages.base_page import BasePage
 feed_url = "https://education.vk.company/feed/"
 
 
-@pytest.fixture(scope="session")
-def credentials():
-    with open("./Selenium/code/files/userdata.json", "r") as file:
-        return json.load(file)
-
-
-@pytest.fixture(scope='session')
-def student_data():
-    with open("./Selenium/code/files/student_data.json", "r") as file:
-        return json.load(file)
-
-
-class MainPage(BasePage):
-    url = "https://education.vk.company/feed/"
-
-
 class TestLogin(BaseCase):
     authorize = True
 
