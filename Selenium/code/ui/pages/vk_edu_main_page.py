@@ -28,6 +28,9 @@ class MainPage(BasePage):
         self.click(self.locators.SHOW_FULL_SCHEDULE_BTN, timeout=10)
         time.sleep(2)
 
+        lesson_data = self.find(self.locators.CURRENT_LESSON_BTN).text
+
         self.click(self.locators.CURRENT_LESSON_BTN, timeout=10)
         time.sleep(3)
 
+        return lesson_data

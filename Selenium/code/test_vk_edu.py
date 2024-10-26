@@ -49,4 +49,7 @@ class TestLK(BaseCase):
         assert self.driver.current_url == student_data["url"]
 
     def test_get_lesson(self):
-        self.main_page.get_lesson()
+        lesson_data = self.main_page.get_lesson()
+
+        assert "Обеспечение качества в разработке ПО" in lesson_data
+        assert "End-to-End тесты на Python" in lesson_data
