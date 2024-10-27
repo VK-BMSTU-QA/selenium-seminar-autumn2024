@@ -2,7 +2,7 @@ import time
 
 import allure
 from selenium.webdriver.remote.webelement import WebElement
-from Selenium.code.ui.locators import basic_locators
+from Selenium.code.ui.locators import basic_locators, vk_locators
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
@@ -13,9 +13,8 @@ class PageNotOpenedExeption(Exception):
 
 class BasePageVK(object):
 
-    locators = basic_locators.BasePageLocators()
-    locators_main = basic_locators.MainPageLocators()
-    url = 'https://www.python.org/'
+    locators = vk_locators.LoginPageLocators()
+    url = 'https://education.vk.company/'
 
     def is_opened(self, timeout=15):
         started = time.time()
@@ -36,18 +35,17 @@ class BasePageVK(object):
     def find(self, locator, timeout=None):
         return self.wait(timeout).until(EC.presence_of_element_located(locator))
 
-    @allure.step('Search')
-    def search(self, query):
-        elem = self.find(self.locators.QUERY_LOCATOR_ID)
-        elem.send_keys(query)
-        go_button = self.find(self.locators.GO_BUTTON_LOCATOR)
-        go_button.click()
-        self.my_assert()
+    def find_all(self, locator, timeout=None):
+        return self.wait(timeout).until(EC.presence_of_all_elements_located(locator))
 
     @allure.step("Step 1")
     def my_assert(self):
         assert 1 == 1
 
+    @allure.step('input')
+    def input(self, input_field, data):
+        elem = self.find(input_field)
+        elem.send_keys(data)
 
     @allure.step('Click')
     def click(self, locator, timeout=None) -> WebElement:
