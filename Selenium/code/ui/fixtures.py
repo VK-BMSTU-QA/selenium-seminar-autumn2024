@@ -1,3 +1,5 @@
+import os
+
 import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
@@ -76,11 +78,9 @@ def login_vked_page(driver):
 
 @pytest.fixture(scope='session')
 def credentials_vked():
-    with open('files/userdata.json', 'r') as f:
-        userdata = json.load(f)
-    email = userdata['email']
-    password = userdata['password']
-    profile_fi = userdata['profile_fi']
+    email = os.getenv('email')
+    password = os.getenv('password')
+    profile_fi = os.getenv('profile_fi')
 
     return {
         'email':      email,

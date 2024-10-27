@@ -1,3 +1,4 @@
+import os
 import time
 
 import pytest
@@ -26,14 +27,11 @@ class TestLK(BaseCaseVkEd):
     authorize = True
 
     def test_lk_find_user(self):
-        with open('files/userdata.json', 'r') as f:
-            userdata = json.load(f)
-        name_to_find = userdata['name_to_find']
-        surname_to_find = userdata['surname_to_find']
+        name_to_find = os.getenv('name_to_find')
+        surname_to_find = os.getenv('surname_to_find')
         field_enter = surname_to_find + " " + name_to_find
 
         self.login_page.click(FeedPageLocators.PEOPLE_BTN_LOC,10)
-        self.login_page.enter_field_return(FeedPageLocators.SEARCH_FIELD_LOC, field_enter, 10)
         self.login_page.enter_field_return(FeedPageLocators.SEARCH_FIELD_LOC, field_enter, 10)
         self.login_page.check_text(FeedPageLocators.SPAN_NAME_LOC, name_to_find, 10)
         self.login_page.check_text(FeedPageLocators.SPAN_SURNAME_LOC, surname_to_find, 10)
