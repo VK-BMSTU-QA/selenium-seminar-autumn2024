@@ -1,86 +1,14 @@
 import os
-import time
-from typing import Literal
 
 import pytest
 from _pytest.fixtures import FixtureRequest
 from dotenv import load_dotenv
 from selenium.webdriver.remote.webdriver import WebDriver
 
-from ui.locators.vk_edu_locators import LoginPageLocators, SchedulePageLocators, PeoplePageLocators
-from ui.pages.base_page import BasePage
-
-
-class LoginPage(BasePage):
-    url = 'https://education.vk.company/'
-
-    def login(self, user, password):
-        self.click(LoginPageLocators.AUTH_OR_REG_BUTTON)
-        self.click(LoginPageLocators.SIGN_UP_BUTTON)
-        self.find(LoginPageLocators.EMAIL_INPUT).send_keys(user)
-        self.find(LoginPageLocators.PASSWORD_INPUT).send_keys(password)
-        self.click(LoginPageLocators.LOGIN_BUTTON)
-        # ждем, когда загрузится следующая страница
-        self.wait().until(lambda d: d.current_url != self.url and 'auth' not in d.current_url)
-
-
-class FeedPage(BasePage):
-    # По заданию первую страницу тестировать не нужно, так что этот класс используется только для получения url
-    url = 'https://education.vk.company/feed/'
-
-
-class SchedulePage(BasePage):
-    url = 'https://education.vk.company/schedule/'
-
-    def get_schedule(self, time_interval: Literal['all_time', 'two_weeks'] = 'all_time', subject: str = 'Обеспечение качества в разработке ПО') -> dict:
-        if time_interval == 'two_weeks':
-            self.click(SchedulePageLocators.SCHEDULE_TWO_WEEKS_INTERVAL)
-        else:
-            self.click(SchedulePageLocators.SCHEDULE_ALL_TIME_INTERVAL)
-
-        if subject:
-            # чтобы не ждать загрузки огромного расписания, конкретизируем его до выбранного предмета
-            self.click(SchedulePageLocators.SUBJECTS_LIST)  # открываем список предметов
-            self.click(SchedulePageLocators.SUBJECT_LIST_ELEM(subject))  # выбираем нужный предмет
-
-        # у элемента должен пропасть класс loading
-        self.wait().until(lambda d: 'loading' not in self.find(SchedulePageLocators.SCHEDULE_TABLE).get_attribute('class'))
-        time.sleep(0.5)  # на работу js, который подгружает расписание из полученного результата
-
-        schedule = dict()
-        rows = self.driver.find_elements(*SchedulePageLocators.ROWS)
-
-        for row in rows:
-            date = row.find_element(*SchedulePageLocators.ROW_DATE).text.strip()
-            event = row.find_element(*SchedulePageLocators.ROW_EVENT).text.strip()
-            location = row.find_element(*SchedulePageLocators.ROW_LOCATION).text.strip()
-
-            schedule[date] = {
-                'event': event,
-                'location': location,
-            }
-
-        return schedule
-
-
-class PeoplePage(BasePage):
-    url = 'https://education.vk.company/people/'
-
-    def search_people(self, name: str) -> list[tuple[str, str]]:
-        self.find(PeoplePageLocators.SEARCH_INPUT).send_keys(name)
-        self.click(PeoplePageLocators.SEARCH_BUTTON)
-        # ждем, когда загрузится страница с результатами поиска
-        time.sleep(8)
-        result = []
-        rows = self.driver.find_elements(*PeoplePageLocators.ROWS)
-        for row in rows:
-            result.append(
-                (
-                    row.find_element(*PeoplePageLocators.ROW_NAME).text,
-                    row.find_element(*PeoplePageLocators.ROW_DESCRIPTION).text
-                )
-            )
-        return result
+from ui.pages.feed_page import FeedPage
+from ui.pages.login_page import LoginPage
+from ui.pages.people_page import PeoplePage
+from ui.pages.schedule_page import SchedulePage
 
 
 class BaseCase:
@@ -126,6 +54,13 @@ class TestLogin(BaseCase):
 
 
 class TestLK(BaseCase):
+    SCHEDULE_DATE = '22 октября 2024'
+    SCHEDULE_LOCATION = 'ауд.395 - зал 3 (МГТУ)'
+
+    PERSON_SEARCH_QUERY = 'Кристина'
+    PERSON_NAME = 'Кристина Буйдина'
+    PERSON_DESCRIPTION = '>> Нажмите, чтобы развернуть <<'
+
     @pytest.fixture(autouse=True)
     def setup_cookies(self, cookies):
         for cookie in cookies:
@@ -141,15 +76,16 @@ class TestLK(BaseCase):
 
     def test_schedule(self, request):
         request.getfixturevalue('setup_schedule_page')
+        self.schedule_page.select_interval('all_time')
+        self.schedule_page.select_subject('Обеспечение качества в разработке ПО')
         schedule = self.schedule_page.get_schedule()
         # будем делать проверку согласно заданию, хотя в реальности расписание может меняться и тесты могут падать
-        assert '22 октября 2024' in schedule.keys()
-        assert schedule.get('22 октября 2024').get('location') == 'ауд.395 - зал 3 (МГТУ)'
+        assert self.SCHEDULE_DATE in schedule.keys()
+        assert schedule.get(self.SCHEDULE_DATE).get('location') == self.SCHEDULE_LOCATION
 
     def test_find_friend(self, request):
         request.getfixturevalue('setup_people_page')
-        query = 'Кристина'
         # по заданию нужно найти друга, будем искать Кристину Буйдину среди всех студентов с таким именем
-        people = self.people_page.search_people(query)
+        people = self.people_page.search_people(self.PERSON_SEARCH_QUERY)
         # надпись "нажмите, чтобы развернуть" - не ссылка, а реальное описание в профиле у Кристины :)
-        assert ('Кристина Буйдина', '>> Нажмите, чтобы развернуть <<') in people
+        assert (self.PERSON_NAME, self.PERSON_DESCRIPTION) in people

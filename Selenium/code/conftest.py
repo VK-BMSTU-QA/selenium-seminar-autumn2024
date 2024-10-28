@@ -1,6 +1,13 @@
 from ui.fixtures import *
 
 
+class Config:
+    URL_VK_EDU = 'https://education.vk.company/'
+    URL_VK_EDU_FEED = f'{URL_VK_EDU}feed/'
+    URL_VK_EDU_PEOPLE = f'{URL_VK_EDU}people/'
+    URL_VK_EDU_SCHEDULE = f'{URL_VK_EDU}schedule/'
+
+
 def pytest_addoption(parser):
     parser.addoption('--browser', default='chrome')
     parser.addoption('--url', default='https://www.python.org')

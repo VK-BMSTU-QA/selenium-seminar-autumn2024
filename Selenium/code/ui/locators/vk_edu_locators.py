@@ -10,20 +10,19 @@ class LoginPageLocators:
 
 
 class SchedulePageLocators:
-    SCHEDULE_TWO_WEEKS_INTERVAL = (By.XPATH, '//*[@id="schedule-interval"]/li[1]/a')
-    SCHEDULE_ALL_TIME_INTERVAL = (By.XPATH, '//*[@id="schedule-interval"]/li[2]/a')
-    SUBJECTS_LIST = (By.XPATH, '//*[@id="react-schedule"]/div/div[1]/div/div/div[2]/div/div[2]')
-    SUBJECT_LIST_ELEM = lambda subject: (By.XPATH, f'//*[contains(text(), "{subject}")]')
-    SCHEDULE_TABLE = (By.XPATH, '//*[@id="react-schedule"]/div/div[2]/div[1]')
+    SCHEDULE_TWO_WEEKS_INTERVAL = (By.XPATH, '//*[@intervalid="near"]')
+    SCHEDULE_ALL_TIME_INTERVAL = (By.XPATH, '//*[@intervalid="semester"]')
+    SUBJECTS_LIST_BUTTON = (By.CSS_SELECTOR, 'div.r-input')
+    SUBJECT_LIST_ELEM = lambda subject: (By.XPATH, f'//*[contains(text(), "{subject}") and contains(@class, "option-label")]')
+    SCHEDULE_TABLE = (By.CSS_SELECTOR, 'table.schedule-timetable')
     ROWS = (By.CSS_SELECTOR, 'tr.schedule-timetable__item')
-    ROW_DATE = (By.XPATH, './td[1]/p[1]/nobr/strong')
-    ROW_EVENT = (By.XPATH, './td[3]/p/span[1]')
-    ROW_LOCATION = (By.XPATH, './td[3]/p/span[2]')
+    ROW_DATE = (By.TAG_NAME, 'strong')
+    ROW_LOCATION = (By.CSS_SELECTOR, 'span.schedule-auditorium')
 
 
 class PeoplePageLocators:
-    SEARCH_INPUT = (By.XPATH, '//*[@id="content"]/div/div[1]/form/input[1]')
-    SEARCH_BUTTON = (By.XPATH, '//*[@id="content"]/div/div[1]/form/input[2]')
+    SEARCH_INPUT = (By.XPATH, '//*[@name="q" and @class="input-text"]')
+    SEARCH_BUTTON = (By.XPATH, '//*[@value="Найти" and @class="input-submit"]')
     ROWS = (By.CSS_SELECTOR, 'td.cell-name')
-    ROW_NAME = (By.XPATH, './div/p[2]/a')
-    ROW_DESCRIPTION = (By.XPATH, '//*[@class="user-desc"]')
+    ROW_NAME = (By.CSS_SELECTOR, 'p.realname')
+    ROW_DESCRIPTION = (By.CSS_SELECTOR, 'p.user-desc')
