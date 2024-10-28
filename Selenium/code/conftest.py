@@ -1,5 +1,7 @@
 from ui.fixtures import *
 
+vk_url = 'https://education.vk.company/'
+vk_feed_url = 'https://education.vk.company/feed/'
 
 def pytest_addoption(parser):
     parser.addoption('--browser', default='chrome')

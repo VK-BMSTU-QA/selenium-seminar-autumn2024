@@ -54,3 +54,9 @@ class BasePage(object):
         self.find(locator, timeout=timeout)
         elem = self.wait(timeout).until(EC.element_to_be_clickable(locator))
         elem.click()
+
+    @allure.step('Input')
+    def input(self, locator, value, timeout=10):
+        elem = self.find(locator, timeout)
+        elem.clear()
+        elem.send_keys(value)

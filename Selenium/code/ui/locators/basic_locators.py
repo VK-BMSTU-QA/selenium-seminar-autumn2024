@@ -10,7 +10,7 @@ class BasePageLocators:
     SEARCH_BUTTON = (By.CSS_SELECTOR, 'li.js-show-search > a')
     SEARCH_INPUT = (By.CSS_SELECTOR, 'li.js-search-input input[name="query"]')
     FOUND_NAME = (By.CSS_SELECTOR, 'p.realname .accent')
-    FOUND_LAST_NAME = (By.XPATH, "//p[@class='realname']/span[2]/span/span[@class='accent']")
+    FOUND_LAST_NAME = (By.CSS_SELECTOR, 'p.realname span:nth-child(2)')    
     SCHEDULE_BUTTON = (By.CSS_SELECTOR, 'li.technopark__menu__item_162 > a')
     SEMESTER_BUTTON = (By.CSS_SELECTOR, 'li.intervalItem[intervalid="semester"] > a')
     CALENDAR_TABLE = (By.CSS_SELECTOR, "table.calendar-month")
