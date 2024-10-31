@@ -2,6 +2,7 @@ import time
 import pytest
 from _pytest.fixtures import FixtureRequest
 
+from ui.pages.login_page import LoginPage
 import logindata
 from base import BaseCase
 from ui.pages.base_page import BasePage
@@ -27,16 +28,22 @@ class BaseCase:
     def setup(self, driver, config, request: FixtureRequest):
         self.driver = driver
         self.config = config
-        self.cresentials = credentials
+        self.cresentials = getCredentials
 
         self.login_page = LoginPage(driver)
         self.locators = basic_locators.BasePageLocators()
         if self.authorize:
             print('Do something for login')
 
+    def set_cookie(self, cookies):
+        self.driver.get(MainPage.url)
+        for cookie in cookies:
+            self.driver.add_cookie(cookie)
+        self.driver.refresh()
+
 
 @pytest.fixture(scope='session')
-def credentials():
+def getCredentials():
         return {
             'email': logindata.email,
             'password': logindata.password
@@ -44,9 +51,9 @@ def credentials():
 
 
 @pytest.fixture(scope='function')
-def cookies(driver, credentials):
+def getCookies(driver, getCredentials):
     login_page = LoginPage(driver)
-    login_page.login(credentials['email'], credentials['password'])
+    login_page.login(getCredentials['email'], getCredentials['password'])
 
     WebDriverWait(driver, 10).until(
         EC.url_to_be(MainPage.url)
@@ -55,18 +62,6 @@ def cookies(driver, credentials):
 
     cookies = driver.get_cookies()
     return cookies
-
-
-class LoginPage(BasePage):
-    url = conftest.vk_url
-
-    
-    def login(self, email, password):
-        self.click(self.locators.AUTH_HEADER_BUTTON)
-        self.click(self.locators.SIGNUP_MODAL_LINK)
-        self.input(self.locators.EMAIL_INPUT, email)
-        self.input(self.locators.PASSWORD_INPUT, password)
-        self.click(self.locators.LOGIN_BUTTON)
 
 
 
@@ -82,19 +77,13 @@ class TestLogin(BaseCase):
             EC.url_to_be(url)
         )
 
-    def test_login(self, credentials):
-        self.login_page.login(credentials['email'], credentials['password'])
+    def test_login(self, getCredentials):
+        self.login_page.login(getCredentials['email'], getCredentials['password'])
         self.wait_for_url(MainPage.url)
         assert self.login_page.driver.current_url == MainPage.url, "URL не соответствует ожидаемому"
 
 
 class TestLK(BaseCase):
-
-    def set_cookie(self, cookies):
-        self.driver.get(MainPage.url)
-        for cookie in cookies:
-            self.driver.add_cookie(cookie)
-        self.driver.refresh()
 
     def search_name(self, name, last_name):
         search_input = self.login_page.find(self.locators.SEARCH_INPUT)
@@ -117,16 +106,16 @@ class TestLK(BaseCase):
         else:
             assert False, f"Элемент с датой '{date}' не найден"
 
-    def test_find_name(self, cookies):
-        self.set_cookie(cookies)
+    def test_find_name(self, getCookies):
+        self.set_cookie(getCookies)
         self.login_page.click(self.locators.SEARCH_BUTTON)
         self.search_name(search_data['name'], search_data['last_name'])
         # Проверка
         self.validate_search(search_data['name'], search_data['last_name'])
 
 
-    def test_find_room(self, cookies):
-        self.set_cookie(cookies)
+    def test_find_room(self, getCookies):
+        self.set_cookie(getCookies)
         # зайти в расписание
         self.login_page.click(self.locators.SCHEDULE_BUTTON)
         time.sleep(2)
