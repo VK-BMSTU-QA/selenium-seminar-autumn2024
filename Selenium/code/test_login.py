@@ -41,6 +41,15 @@ class BaseCase:
             self.driver.add_cookie(cookie)
         self.driver.refresh()
 
+    def login_and_verify(self, email, password, expected_url):
+        self.login_page.login(email, password)
+        self.wait_for_url(expected_url)
+        assert self.login_page.driver.current_url == expected_url, f"URL не соответствует ожидаемому: {expected_url}"
+
+    def wait_for_url(self, url):
+        WebDriverWait(self.driver, 10).until(EC.url_to_be(url))
+
+
 
 @pytest.fixture(scope='session')
 def getCredentials():
@@ -52,14 +61,10 @@ def getCredentials():
 
 @pytest.fixture(scope='function')
 def getCookies(driver, getCredentials):
-    login_page = LoginPage(driver)
-    login_page.login(getCredentials['email'], getCredentials['password'])
-
-    WebDriverWait(driver, 10).until(
-        EC.url_to_be(MainPage.url)
-    )
-    assert driver.current_url == MainPage.url, "URL не соответствует ожидаемому"
-
+    base_case = BaseCase()
+    base_case.driver = driver
+    base_case.login_page = LoginPage(driver)
+    base_case.login_and_verify(getCredentials['email'], getCredentials['password'], MainPage.url)
     cookies = driver.get_cookies()
     return cookies
 
@@ -72,16 +77,8 @@ class MainPage(BasePage):
 class TestLogin(BaseCase):
     authorize = True
 
-    def wait_for_url(self, url):
-        WebDriverWait(self.driver, 10).until(
-            EC.url_to_be(url)
-        )
-
     def test_login(self, getCredentials):
-        self.login_page.login(getCredentials['email'], getCredentials['password'])
-        self.wait_for_url(MainPage.url)
-        assert self.login_page.driver.current_url == MainPage.url, "URL не соответствует ожидаемому"
-
+        self.login_and_verify(getCredentials['email'], getCredentials['password'], MainPage.url)
 
 class TestLK(BaseCase):
 
