@@ -1,19 +1,19 @@
 import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
-from webdriver_manager.chrome import ChromeDriverManager
-from webdriver_manager.firefox import GeckoDriverManager
 from ui.pages.base_page import BasePage
 from ui.pages.main_page import MainPage
 
 
-@pytest.fixture()
+@pytest.fixture(scope='session')
 def driver(config):
     browser = config['browser']
     url = config['url']
     selenoid = config['selenoid']
     vnc = config['vnc']
     options = Options()
+    if config['headless']:
+        options.add_argument('--headless')
     if selenoid:
         capabilities = {
             'browserName': 'chrome',
@@ -24,12 +24,11 @@ def driver(config):
         driver = webdriver.Remote(
             'http://127.0.0.1:4444/wd/hub',
             options=options,
-            desired_capabilities=capabilities
         )
     elif browser == 'chrome':
-        driver = webdriver.Chrome(executable_path=ChromeDriverManager().install())
+        driver = webdriver.Chrome(options=options)
     elif browser == 'firefox':
-        driver = webdriver.Firefox(executable_path=GeckoDriverManager().install())
+        driver = webdriver.Firefox(options=options)
     else:
         raise RuntimeError(f'Unsupported browser: "{browser}"')
     driver.get(url)
@@ -40,9 +39,9 @@ def driver(config):
 
 def get_driver(browser_name):
     if browser_name == 'chrome':
-        browser = webdriver.Chrome(executable_path=ChromeDriverManager().install())
+        browser = webdriver.Chrome()
     elif browser_name == 'firefox':
-        browser = webdriver.Firefox(executable_path=GeckoDriverManager().install())
+        browser = webdriver.Firefox()
     else:
         raise RuntimeError(f'Unsupported browser: "{browser_name}"')
     browser.maximize_window()
