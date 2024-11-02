@@ -3,14 +3,11 @@ from selenium.webdriver.common.by import By
 
 class BasePageLocators:
     LOGIN_BUTTON = (By.XPATH, '//a[contains(text(), "вход / регистрация")]')
-    USE_EMAIL_AND_PASSWORD_BUTTON = (By.XPATH, '//button[@type="reset" and contains(text(), "Продолжить с помощью почты и пароля")]')
+    USE_EMAIL_AND_PASSWORD_BUTTON = (
+    By.XPATH, '//button[@type="reset" and contains(text(), "Продолжить с помощью почты и пароля")]')
     EMAIL_INPUT = (By.ID, 'email')
     PASSWORD_INPUT = (By.ID, 'password')
     SUBMIT_BUTTON = (By.XPATH, '//button[@type="submit" and contains(text(), "Войти с паролем")]')
-
-
-class MainPageLocators(BasePageLocators):
-    pass
 
 
 class PersonPageLocators(BasePageLocators):
