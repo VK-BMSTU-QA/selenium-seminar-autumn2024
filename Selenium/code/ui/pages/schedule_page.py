@@ -30,9 +30,11 @@ class SchedulePage(BasePage):
         }
 
     def get_schedule(self) -> dict:
+        rows = self.driver.find_elements(*SchedulePageLocators.ROWS)
         # у элемента должен пропасть класс loading
         self.wait().until(lambda d: 'loading' not in d.find_element(*SchedulePageLocators.SCHEDULE_TABLE).get_attribute('class'))
-        time.sleep(0.5)  # На отрисовку таблицы. Никаких других элементов для индикации загрузки нет, так что только time.sleep
+        # ожидаем, что содержимое поменялось
+        self.wait().until(lambda d: d.find_elements(*SchedulePageLocators.ROWS) != rows)
 
         schedule = dict()
         rows = self.driver.find_elements(*SchedulePageLocators.ROWS)
