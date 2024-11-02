@@ -1,13 +1,20 @@
+import json
+import os
+
 import pytest
 from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.chrome.service import Service
+from ui.pages.base_page import BasePage
+from ui.pages.login_page import LoginPage
+from ui.pages.main_page import MainPage
+from ui.pages.person_page import PersonPage
+from ui.pages.schedule_page import SchedulePage
 from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.firefox import GeckoDriverManager
-from ui.pages.base_page import BasePage
-from ui.pages.main_page import MainPage
 
 
-@pytest.fixture()
+@pytest.fixture(scope='session')
 def driver(config):
     browser = config['browser']
     url = config['url']
@@ -27,9 +34,11 @@ def driver(config):
             desired_capabilities=capabilities
         )
     elif browser == 'chrome':
-        driver = webdriver.Chrome(executable_path=ChromeDriverManager().install())
+        s = Service(ChromeDriverManager().install())
+        driver = webdriver.Chrome(service=s)
     elif browser == 'firefox':
-        driver = webdriver.Firefox(executable_path=GeckoDriverManager().install())
+        s = Service(GeckoDriverManager().install())
+        driver = webdriver.Firefox(service=s)
     else:
         raise RuntimeError(f'Unsupported browser: "{browser}"')
     driver.get(url)
@@ -40,9 +49,11 @@ def driver(config):
 
 def get_driver(browser_name):
     if browser_name == 'chrome':
-        browser = webdriver.Chrome(executable_path=ChromeDriverManager().install())
+        s = Service(ChromeDriverManager().install())
+        browser = webdriver.Chrome(service=s)
     elif browser_name == 'firefox':
-        browser = webdriver.Firefox(executable_path=GeckoDriverManager().install())
+        s = Service(GeckoDriverManager().install())
+        browser = webdriver.Firefox(service=s)
     else:
         raise RuntimeError(f'Unsupported browser: "{browser_name}"')
     browser.maximize_window()
@@ -66,3 +77,34 @@ def base_page(driver):
 @pytest.fixture
 def main_page(driver):
     return MainPage(driver=driver)
+
+
+@pytest.fixture
+def schedule_page(driver):
+    return SchedulePage(driver=driver)
+
+
+@pytest.fixture
+def person_page(driver):
+    return PersonPage(driver=driver)
+
+
+@pytest.fixture
+def setup_cookies(driver, cookies):
+    for cookie in cookies:
+        driver.add_cookie(cookie)
+
+
+@pytest.fixture(scope='session')
+def credentials():
+    file_path = os.path.join(os.path.dirname(__file__), '..', 'files', 'credentials.json')
+    with open(file_path, 'r') as f:
+        return json.load(f)
+
+
+@pytest.fixture(scope='session')
+def cookies(credentials, driver):
+    login_page = LoginPage(driver)
+    login_page.login(credentials['login'], credentials['password'])
+
+    return driver.get_cookies()
