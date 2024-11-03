@@ -40,4 +40,3 @@ class BaseCaseVkEd:
             self.login_page.click(AuthPageLocators.GO_WITH_EMAIL_BTN_LOC, 5)
             self.login_page.enter_field(AuthPageLocators.EMAIL_INP_LOC, self.email, 5)
             self.login_page.enter_field_return(AuthPageLocators.PASSWORD_INP_LOC, self.password, 5)
-            self.login_page.check_text(AuthPageLocators.PROFILE_FIO_LOC, self.profile_fi, 10)

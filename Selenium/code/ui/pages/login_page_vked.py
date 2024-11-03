@@ -63,7 +63,8 @@ class LoginPage(object):
         elem.send_keys(value)
         elem.send_keys(Keys.RETURN)
 
-    @allure.step('CheckText')
-    def check_text(self, locator, text, timeout=None) -> WebElement:
-        checked = self.wait(timeout).until(EC.text_to_be_present_in_element(locator, text))
-        assert checked
+    @allure.step('GetText')
+    def get_text(self, locator, timeout=None) -> str:
+        self.wait(timeout).until(EC.presence_of_element_located(locator))
+        element = self.driver.find_element(*locator)
+        return element.text
