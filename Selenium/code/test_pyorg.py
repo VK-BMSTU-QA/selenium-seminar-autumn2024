@@ -25,7 +25,7 @@ class TestExample(BaseCase):
             ),
         ],
     )
-    @pytest.mark.skip('skip')
+    # @pytest.mark.skip('skip')
     def test_search(self, query):
         self.base_page.search(query)
         assert 'No results found' not in self.driver.page_source
@@ -39,19 +39,19 @@ class TestExample(BaseCase):
         assert 'No results found' in self.driver.page_source
         assert 1 == 0
 
-    @pytest.mark.skip('skip')
+    # @pytest.mark.skip('skip')
     def test_page_change(self):
         self.base_page.click(
             basic_locators.BasePageLocators.GO_BUTTON_LOCATOR, timeout=10
         )
 
-    @pytest.mark.skip('skip')
+    # @pytest.mark.skip('skip')
     def test_carousel(self):
         self.main_page.click(
             basic_locators.MainPageLocators.COMPREHENSIONS, timeout=15
         )
 
-    @pytest.mark.skip('skip')
+    # @pytest.mark.skip('skip')
     def test_iframe(self):
         self.main_page.click(self.main_page.locators.START_SHELL)
         time.sleep(15)
@@ -67,7 +67,7 @@ class TestExample(BaseCase):
         time.sleep(10)
         self.driver.switch_to.default_content()
 
-    @pytest.mark.skip('skip')
+    # @pytest.mark.skip('skip')
     def test_new_tab(self):
         current_window = self.driver.current_window_handle
 
@@ -80,7 +80,7 @@ class TestExample(BaseCase):
             time.sleep(3)
         time.sleep(3)
 
-    @pytest.mark.skip('skip')
+    # @pytest.mark.skip('skip')
     def test_events(self):
         time.sleep(5)
         with allure.step('Going to events page'):
@@ -89,7 +89,7 @@ class TestExample(BaseCase):
         with allure.step('asserting ...'):
             assert 1 == 1
 
-    @pytest.mark.skip('skip')
+    # @pytest.mark.skip('skip')
     def test_relative(self):
         time.sleep(5)
         intro = self.main_page.find((By.CSS_SELECTOR, 'div.introduction'))
@@ -100,7 +100,7 @@ class TestExample(BaseCase):
 
 class TestLoad(BaseCase):
 
-    @pytest.mark.skip('skip')
+    # @pytest.mark.skip('skip')
     def test_download(self):
         self.driver.get('https://www.python.org/downloads/release/python-3100/')
         time.sleep(5)
@@ -111,7 +111,7 @@ class TestLoad(BaseCase):
     def file_path(self, repo_root):
         return os.path.join(repo_root, 'files', 'userdata')
 
-    @pytest.mark.skip('skip')
+    # @pytest.mark.skip('skip')
     def test_upload(self, file_path):
         self.driver.get('https://ps.uci.edu/~franklin/doc/file_upload.html')
         input = (By.NAME, 'userfile')
@@ -127,20 +127,20 @@ class TestFailed(BaseCase):
 
         time.sleep(10)
 
-    @pytest.mark.skip('skip')
+    # @pytest.mark.skip('skip')
     def test_logs_browser(self):
         time.sleep(10)
         self.driver.get('https://target.my.com/')
         time.sleep(10)
         assert 0
 
-    @pytest.mark.skip('skip')
+    # @pytest.mark.skip('skip')
     @allure.step("Step 1")
     def test_log(self):
         events_page = self.main_page.go_to_events_page()
         assert 1 == 0
 
 
-@pytest.mark.skip('skip')
+# @pytest.mark.skip('skip')
 def test_check_all_drivers(all_drivers):
     time.sleep(3)
