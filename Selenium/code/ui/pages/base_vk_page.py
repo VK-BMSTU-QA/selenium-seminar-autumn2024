@@ -45,21 +45,17 @@ class BaseVkPage(object):
         elem = self.wait(timeout).until(EC.element_to_be_clickable(locator))
         elem.click()
 
-    # @allure.step('Authorize')
-    # def authorize(self):
-    #     base_dir = os.path.dirname(os.path.abspath(__file__))
-    #     filepath = os.path.join(base_dir, '../../files/userdata.json')
-    #     with open(filepath, 'r') as file:
-    #         userdata = json.load(file)
-    #     login = userdata['login']
-    #     password = userdata['password']
-    #     self.click(self.locators.LOGIN_BTN, timeout=5)
-    #     self.click(self.locators.CONTINUE_WITH_EMAIL_BTN, timeout=5)
-    #     login_input = self.find(self.locators.LOGIN_INPUT)
-    #     login_input.send_keys(login)
-    #     password_input = self.find(self.locators.PASSWORD_INPUT)
-    #     password_input.send_keys(password)
-    #     self.click(self.locators.CONFIRM_LOGIN_BTN, timeout=5)
-    #     self.find(self.locators.USER_INFO, timeout=5) # для ожмдания загрузки страницы (перехода)
+    @allure.step('Authorize')
+    def authorize(self, userdata):
+        login = userdata['login']
+        password = userdata['password']
+        self.click(self.locators.LOGIN_BTN, timeout=5)
+        self.click(self.locators.CONTINUE_WITH_EMAIL_BTN, timeout=5)
+        login_input = self.find(self.locators.LOGIN_INPUT)
+        login_input.send_keys(login)
+        password_input = self.find(self.locators.PASSWORD_INPUT)
+        password_input.send_keys(password)
+        self.click(self.locators.CONFIRM_LOGIN_BTN, timeout=5)
+        self.find(self.locators.USER_INFO, timeout=5) # для ожмдания загрузки страницы (перехода)
         
 
