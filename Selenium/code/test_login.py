@@ -43,13 +43,8 @@ class BaseCase:
 
     def login_and_verify(self, email, password, expected_url):
         self.login_page.login(email, password)
-        self.wait_for_url(expected_url)
+        self.login_page.wait_for_url(expected_url)
         assert self.login_page.driver.current_url == expected_url, f"URL не соответствует ожидаемому: {expected_url}"
-
-    def wait_for_url(self, url):
-        WebDriverWait(self.driver, 10).until(EC.url_to_be(url))
-
-
 
 @pytest.fixture(scope='session')
 def getCredentials():
@@ -57,7 +52,6 @@ def getCredentials():
             'email': logindata.email,
             'password': logindata.password
     }
-
 
 @pytest.fixture(scope='function')
 def getCookies(driver, getCredentials):
@@ -67,6 +61,7 @@ def getCookies(driver, getCredentials):
     base_case.login_and_verify(getCredentials['email'], getCredentials['password'], MainPage.url)
     cookies = driver.get_cookies()
     return cookies
+
 
 
 
@@ -93,7 +88,8 @@ class TestLK(BaseCase):
         found_last_name = self.login_page.find(self.locators.FOUND_LAST_NAME).text
         assert found_last_name == last_name, f"Ожидалась фамилия '{last_name}', но найдена '{found_last_name}'"
 
-    def find_room_in_schedule(self, date, room, schedule_items):
+    def find_room_in_schedule(self, date, room):
+        schedule_items = self.login_page.wait_for_elements(self.locators.SCHEDULE_ITEM, timeout=20)
         for item in schedule_items:
             date_text = item.find_element(*self.locators.SCHEDULE_ITEM_DATE).text
             if date_text == date:
@@ -110,7 +106,6 @@ class TestLK(BaseCase):
         # Проверка
         self.validate_search(search_data['name'], search_data['last_name'])
 
-
     def test_find_room(self, getCookies):
         self.set_cookie(getCookies)
         # зайти в расписание
@@ -119,7 +114,5 @@ class TestLK(BaseCase):
         # кнопка "Весь семестр"
         self.login_page.click(self.locators.SEMESTER_BUTTON)
         time.sleep(10)
-        schedule_items = WebDriverWait(
-            self.driver, 10).until(EC.presence_of_all_elements_located(self.locators.SCHEDULE_ITEM))
-        self.find_room_in_schedule(search_data['date'], search_data['room'], schedule_items)
+        self.find_room_in_schedule(search_data['date'], search_data['room'])
 
