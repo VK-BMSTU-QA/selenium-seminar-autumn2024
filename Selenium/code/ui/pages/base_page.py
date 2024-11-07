@@ -51,6 +51,7 @@ class BasePage(object):
 
     @allure.step('Click')
     def click(self, locator, timeout=None) -> WebElement:
-        self.find(locator, timeout=timeout)
+        elem = self.wait(timeout).until(EC.visibility_of_element_located(locator))
         elem = self.wait(timeout).until(EC.element_to_be_clickable(locator))
         elem.click()
+        return elem

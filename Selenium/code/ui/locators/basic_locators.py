@@ -9,11 +9,11 @@ class BasePageLocators:
     PYTHON_CONSOLE = (By.ID, 'hterm:row-nodes')
 
 class LoginPageLocators(BasePageLocators):
-    AUTH_BUTTON = (By.XPATH, "//button/a[contains(text(), 'вход / регистрация')]")
-    CONTINUE_BUTTON = (By.XPATH, "//button[contains(text(), 'Продолжить с помощью почты и пароля')]")
+    AUTH_BUTTON = (By.CLASS_NAME, "AuthButton__SAuthLink-sc-1iwc4q0-0")
+    CONTINUE_BUTTON = (By.CLASS_NAME, "Button__SButton-sc-74bmbt-0.bLqIKi.gtm-signup-modal-link")
     EMAIL_INPUT = (By.ID, "email")
     PASSWORD_INPUT = (By.ID, "password")
-    LOGIN_BUTTON = (By.XPATH, "//button[contains(text(), 'Войти с паролем')]")
+    LOGIN_BUTTON = (By.CLASS_NAME, "Button__SButton-sc-74bmbt-0.gmKwFa.gtm-login-btn")
 
 class MainPageLocators(BasePageLocators):
     COMPREHENSIONS = (

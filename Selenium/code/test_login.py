@@ -2,6 +2,7 @@ import os
 import time
 import allure
 import pytest
+import config
 from dotenv import load_dotenv
 from ui.locators import basic_locators
 from _pytest.fixtures import FixtureRequest
@@ -33,13 +34,8 @@ def credentials():
     }
 
 
-@pytest.fixture(scope='session')
-def cookies(credentials, config):
-    pass
-
-
 class LoginPage(BasePage):
-    url = 'https://education.vk.company/'
+    url = config.LOGIN_URL
     locators = basic_locators.LoginPageLocators
 
     def login(self, user, password):
@@ -64,7 +60,7 @@ class LoginPage(BasePage):
 
 
 class MainPage(BasePage):
-    url = 'https://education.vk.company/feed/'
+    url = config.FEED_URL
     locators = basic_locators.MainPageLocators
 
     @allure.step('Click Search Icon')
@@ -125,6 +121,7 @@ class TestLogin(BaseCase):
     def test_login(self, credentials):
         main_page = self.login_page.login(credentials['username'], credentials['password'])
 
+        allure.attach(body=main_page.url, name="Main Page URL", attachment_type=allure.attachment_type.TEXT)
         assert main_page.url == MainPage.url, "Login was not successful!"
 
 
@@ -141,9 +138,10 @@ class TestLK(BaseCase):
 
         user_info = main_page.get_user_info()
 
-        print("Информация о пользователе:")
-        print("Обо мне:", user_info["about"])
-        print("Дата рождения:", user_info["birthday"])
+        allure.attach(body=f"Обо мне: {user_info['about']}", name="User About Info",
+                      attachment_type=allure.attachment_type.TEXT)
+        allure.attach(body=f"Дата рождения: {user_info['birthday']}", name="User Birthday Info",
+                      attachment_type=allure.attachment_type.TEXT)
 
         assert "Пользователь не заполнил раздел \"О себе\"" in user_info["about"]
         assert "22 июля" in user_info["birthday"]
@@ -160,6 +158,17 @@ class TestLK(BaseCase):
         main_page.click_lesson("End-to-End тесты на Python")
 
         lesson_info = main_page.extract_lesson_info()
+
+        allure.attach(body=f"Заголовок занятия: {lesson_info['title']}", name="Lesson Title",
+                      attachment_type=allure.attachment_type.TEXT)
+        allure.attach(body=f"Дата занятия: {lesson_info['date']}", name="Lesson Date",
+                      attachment_type=allure.attachment_type.TEXT)
+        allure.attach(body=f"Описание занятия: {lesson_info['description']}", name="Lesson Description",
+                      attachment_type=allure.attachment_type.TEXT)
+        allure.attach(body=f"Заголовок домашнего задания: {lesson_info['homework']['title']}", name="Homework Title",
+                      attachment_type=allure.attachment_type.TEXT)
+        allure.attach(body=f"Дедлайн домашнего задания: {lesson_info['homework']['deadline']}",
+                      name="Homework Deadline", attachment_type=allure.attachment_type.TEXT)
 
         assert lesson_info['title'] == "End-to-End тесты на Python"
         assert lesson_info['date'] == "22 октября 18:00 — 21:00 Мск"
