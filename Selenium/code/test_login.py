@@ -15,10 +15,6 @@ def credentials():
         "password": os.getenv("password")
     }
 
-@pytest.fixture(scope='session')
-def cookies(credentials, config):
-        pass
-
 class TestLogin(page.BaseCase):
     authorize = True
 

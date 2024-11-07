@@ -68,22 +68,22 @@ class MainPage(BasePage):
 
     def get_user_info(self):
         profile_element = self.find(BC.MainPageLocators.PROFILE_ELEMENT)
-        about = profile_element.find_element(By.XPATH, ".//div[@class='profile-about-text']").text
-        birthday = profile_element.find_element(By.XPATH, ".//div[@class='profile-about-text'][2]").text
+        about_element, birthday_element = [el.text for el in
+                                           profile_element.find_elements(*BC.MainPageLocators.GET_USER_INFO_ABOUT)]
 
         return {
-            "about": about,
-            "birthday": birthday
+            "about": about_element,
+            "birthday": birthday_element
         }
 
     def click_program_icon(self):
         self.click(BC.MainPageLocators.CLICK_PROGRAM_ICON, 10)
 
-    def click_program(self):
-        self.click(BC.MainPageLocators.CLICK_PROGRAM, 10)
+    def select_program(self):
+        self.click(BC.MainPageLocators.SELECT_PROGRAM, 10)
 
-    def click_lesson(self):
-        self.click(BC.MainPageLocators.CLICK_LESSON, 10)
+    def select_lesson(self):
+        self.click(BC.MainPageLocators.SELECT_LESSON, 10)
 
     def click_selected_lesson(self):
         self.click(BC.MainPageLocators.CLICK_SELECTED_LESSON, 10)

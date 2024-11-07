@@ -22,11 +22,10 @@ class MainPageLocators(BasePageLocators):
     CLICK_SEARCH_BUTTON = (By.XPATH, '//input[@value="Найти"]')
     CLICK_USER = (By.XPATH, "//p[@class='realname']/a")
     PROFILE_ELEMENT = (By.CLASS_NAME, 'profile-about')
-    GET_USER_INFO_ABOUT = [By.XPATH, ".//div[@class='profile-about-text'][1]"]
-    GET_USER_INFO_BIRTHDAY = [By.XPATH, ".//div[contains(@class, 'profile-about-text')][2]"]
-    CLICK_PROGRAM_ICON = (By.XPATH, "//li[contains(@class, 'technopark__menu__item_160')]//a")
-    CLICK_PROGRAM = (By.XPATH,"//a[contains(@class, 'discipline-card') and contains(., '#2291: Обеспечение качества в разработке ПО')]")
-    CLICK_LESSON = (By.LINK_TEXT, 'Занятия')
+    GET_USER_INFO_ABOUT = (By.CLASS_NAME, 'profile-about-text')
+    CLICK_PROGRAM_ICON = (By.PARTIAL_LINK_TEXT, 'Программа')
+    SELECT_PROGRAM = (By.PARTIAL_LINK_TEXT, '#2291: Обеспечение качества в разработке ПО')
+    SELECT_LESSON = (By.LINK_TEXT, 'Занятия')
     CLICK_SELECTED_LESSON = (By.PARTIAL_LINK_TEXT, 'End-to-End тесты на Python')
     LESSON_TITLE = (By.CLASS_NAME, "lesson-title")
     GET_LESSON_DATE_INFO = (By.XPATH,"//div[contains(@class, 'info-pair')]/strong[text()='Дата проведения']/following-sibling::span")

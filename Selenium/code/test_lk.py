@@ -34,21 +34,21 @@ class TestLK(page.BaseCase):
 
         user_info = main_page.get_user_info()
 
-        assert "Учусь на СГН3-71Б 😎" in user_info["about"]
-        assert "17 октября" in user_info["birthday"]
+        assert "Учусь на СГН3-71Б 😎" in user_info["about"], "About info is incorrect"
+        assert "17 октября" in user_info["birthday"], "Birthday info is incorrect"
 
     def test_lk2(self, credentials):
         main_page = self.login_page.login(credentials['username'], credentials['password'])
 
         main_page.click_program_icon()
 
-        main_page.click_program()
+        main_page.select_program()
 
-        main_page.click_lesson()
+        main_page.select_lesson()
 
         main_page.click_selected_lesson()
 
         lesson_info = main_page.get_lesson_info()
 
-        assert "22 октября 18:00 — 21:00 Мск" in lesson_info["date"]
-        assert "Аудитория ауд.395 - зал 3 (МГТУ) и Онлайн (ссылки пока нет)" in lesson_info["location"]
+        assert "22 октября 18:00 — 21:00 Мск" in lesson_info["date"], "Date info is incorrect"
+        assert "Аудитория ауд.395 - зал 3 (МГТУ) и Онлайн (ссылки пока нет)" in lesson_info["location"], "Location info is incorrect"
