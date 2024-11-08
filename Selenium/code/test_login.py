@@ -1,12 +1,19 @@
 import json
-import time
+import os
 import pytest
 from _pytest.fixtures import FixtureRequest
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 from ui.pages.base_page_vk import BasePage
 from ui.locators import basic_locators_vk
 
+# Конфигурация URL
+URLS = {
+    'login': 'https://education.vk.company/',
+    'main': 'https://education.vk.company/feed/'
+}
 
 class BaseCase:
     authorize = True
@@ -21,41 +28,40 @@ class BaseCase:
 @pytest.fixture(scope='session')
 def credentials():
     return {
-        'user': '',
-        'password': ''
+        'user': os.getenv('LOGIN_USER', ''),
+        'password': os.getenv('LOGIN_PASSWORD', '')
     }
 
 
 class LoginPage(BasePage):
-    url = 'https://education.vk.company/'
+    url = URLS['login']
 
     def login(self, credentials):
         self.driver.maximize_window()
         self.click(
-            basic_locators_vk.LoginPageLocators.GO_BUTTON_AUTHBUTTON_LOCATOR, timeout=10
+            basic_locators_vk.LoginPageLocators.GO_BUTTON_AUTHBUTTON_LOCATOR
         )
-        time.sleep(3)
-        self.click(
-            basic_locators_vk.LoginPageLocators.GO_BUTTON_TYPEAUTH_LOCATOR, timeout=10
-        )
-        time.sleep(3)
+        WebDriverWait(self.driver, 10).until(
+            EC.element_to_be_clickable(basic_locators_vk.LoginPageLocators.GO_BUTTON_TYPEAUTH_LOCATOR)
+        ).click()
         self.input(
             basic_locators_vk.LoginPageLocators.LOGIN_INPUT_LOCATOR,
-            credentials.get('user', ''),
+            credentials.get('user', '')
         )
         self.input(
             basic_locators_vk.LoginPageLocators.PASSWORD_INPUT_LOCATOR,
-            credentials.get('password', ''),
+            credentials.get('password', '')
         )
-        time.sleep(3)
         self.click(
-            basic_locators_vk.LoginPageLocators.GO_BUTTON_LOGIN_LOCATOR, timeout=10
+            basic_locators_vk.LoginPageLocators.GO_BUTTON_LOGIN_LOCATOR
         )
-        time.sleep(5)
+        WebDriverWait(self.driver, 10).until(
+            EC.url_contains('/feed/')
+        )
 
 
 class MainPage(BasePage):
-    url = 'https://education.vk.company/feed/'
+    url = URLS['main']
 
     def is_opened(self):
         # Проверим, что мы находимся на главной странице
@@ -69,9 +75,8 @@ class MainPage(BasePage):
         # Добавляем cookies в браузер
         for cookie in cookies:
             self.driver.add_cookie(cookie)
-            # Переходим на страницу /feed/, требующую авторизации
-        self.driver.get('https://education.vk.company/feed/')
-        time.sleep(3)
+        self.driver.get(self.url)
+        WebDriverWait(self.driver, 10).until(EC.url_contains('/feed/'))
 
 
 class TestLK(BaseCase):
@@ -89,35 +94,27 @@ class TestLK(BaseCase):
         main_page = MainPage(self.driver)
         main_page.open_main()
         main_page.click(
-            basic_locators_vk.MainPageLocators.GO_BUTTON_OPENSEARCH_LOCATOR, timeout=10
+            basic_locators_vk.MainPageLocators.GO_BUTTON_OPENSEARCH_LOCATOR
         )
-        time.sleep(1)
         search_element = basic_locators_vk.MainPageLocators.SEARCH_INPUT_LOCATOR
         main_page.input(search_element, "Александр Никитин")
-        time.sleep(1)
         main_page.find(search_element).send_keys(Keys.RETURN)
-        time.sleep(1)
-        main_page.click(
-            basic_locators_vk.MainPageLocators.FRIEND_LOCATOR, timeout=10
-        )
-        time.sleep(5)
+        WebDriverWait(self.driver, 10).until(
+            EC.presence_of_element_located(basic_locators_vk.MainPageLocators.FRIEND_LOCATOR)
+        ).click()
 
     def test_lesson(self):
         main_page = MainPage(self.driver)
         main_page.open_main()
         main_page.click(
-            basic_locators_vk.MainPageLocators.GO_BUTTON_PROGRAM_LOCATOR, timeout=10
+            basic_locators_vk.MainPageLocators.GO_BUTTON_PROGRAM_LOCATOR
         )
-        time.sleep(1)
+        WebDriverWait(self.driver, 10).until(
+            EC.element_to_be_clickable(basic_locators_vk.MainPageLocators.GO_BUTTON_PROGRAM_TEST_LOCATOR)
+        ).click()
         main_page.click(
-            basic_locators_vk.MainPageLocators.GO_BUTTON_PROGRAM_TEST_LOCATOR, timeout=10
+            basic_locators_vk.MainPageLocators.GO_BUTTON_LESSONS_LOCATOR
         )
-        time.sleep(1)
-        main_page.click(
-            basic_locators_vk.MainPageLocators.GO_BUTTON_LESSONS_LOCATOR, timeout=10
-        )
-        time.sleep(1)
-        main_page.click(
-            basic_locators_vk.MainPageLocators.GO_BUTTON_LESSON_LOCATOR, timeout=10
-        )
-        time.sleep(5)
+        WebDriverWait(self.driver, 10).until(
+            EC.element_to_be_clickable(basic_locators_vk.MainPageLocators.GO_BUTTON_LESSON_LOCATOR)
+        ).click()
