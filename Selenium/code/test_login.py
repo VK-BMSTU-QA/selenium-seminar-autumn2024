@@ -1,57 +1,24 @@
 import pytest
+import os
 from _pytest.fixtures import FixtureRequest
-
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions
+from selenium.webdriver.common.by import By
 from ui.pages.base_page import BasePage
-
-
-class BaseCase:
-    authorize = True
-
-    @pytest.fixture(scope='function', autouse=True)
-    def setup(self, driver, config, request: FixtureRequest):
-        self.driver = driver
-        self.config = config
-
-        self.login_page = LoginPage(driver)
-        if self.authorize:
-            print('Do something for login')
-
+from ui.locators import basic_locators as BC
+import page
 
 @pytest.fixture(scope='session')
 def credentials():
-        pass
+    return {
+        "username": os.getenv("username"),
+        "password": os.getenv("password")
+    }
 
-
-@pytest.fixture(scope='session')
-def cookies(credentials, config):
-        pass
-
-
-class LoginPage(BasePage):
-    url = 'https://education.vk.company'
-
-    def login(self, user, password):
-        return MainPage(self.driver)
-
-
-class MainPage(BasePage):
-    url = 'https://education.vk.company/feed/'
-
-
-class TestLogin(BaseCase):
+class TestLogin(page.BaseCase):
     authorize = True
 
     def test_login(self, credentials):
-        pass
+        main_page = self.login_page.login(credentials["username"], credentials["password"])
+        assert main_page.url == page.MainPage.url, "Login successful!"
 
-
-class TestLK(BaseCase):
-
-    def test_lk1(self):
-        pass
-
-    def test_lk2(self):
-        pass
-
-    def test_lk3(self):
-        pass
