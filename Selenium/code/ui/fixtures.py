@@ -3,7 +3,7 @@ from selenium import webdriver
 from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 from webdriver_manager.firefox import GeckoDriverManager
-from ui.pages.base_page import BasePage
+from ui.pages.vk_base_page import BasePage
 from ui.pages.main_page import MainPage
 
 
@@ -14,6 +14,7 @@ def driver(config):
     selenoid = config['selenoid']
     vnc = config['vnc']
     options = Options()
+    # options.page_load_strategy = 'eager'
     if selenoid:
         capabilities = {
             'browserName': 'chrome',
@@ -27,9 +28,9 @@ def driver(config):
             desired_capabilities=capabilities
         )
     elif browser == 'chrome':
-        driver = webdriver.Chrome(executable_path=ChromeDriverManager().install())
+        driver = webdriver.Chrome(options=options)
     elif browser == 'firefox':
-        driver = webdriver.Firefox(executable_path=GeckoDriverManager().install())
+        driver = webdriver.Firefox()
     else:
         raise RuntimeError(f'Unsupported browser: "{browser}"')
     driver.get(url)
