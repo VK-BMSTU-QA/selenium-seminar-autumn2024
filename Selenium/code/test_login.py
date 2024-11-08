@@ -1,12 +1,20 @@
 import json
+import os
 import time
 import pytest
 from _pytest.fixtures import FixtureRequest
-from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
+from selenium.webdriver.support.wait import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 from ui.pages.vk_base_page import BasePage
 from ui.locators import vk_locators
+
+URL_CONFIG = {
+    'base': 'https://education.vk.company/',
+    'feed': 'https://education.vk.company/feed/',
+    'friend': 'https://education.vk.company/profile/user_191238/'
+}
 
 
 class BaseCase:
@@ -22,17 +30,17 @@ class BaseCase:
 @pytest.fixture(scope='session')
 def credentials():
     return {
-        'user': '',
-        'password': ''
+        'user': os.environ.get("VK_USERNAME"),
+        'password': os.environ.get("VK_PASSWORD")
     }
 
 
 class LoginPage(BasePage):
-    url = 'https://education.vk.company/'
+    url = URL_CONFIG['base']
 
 
 class MainPage(BasePage):
-    url = 'https://education.vk.company/feed/'
+    url = URL_CONFIG['feed']
 
     def load_cookies(self):
         with open('cookies.json', 'r') as f:
@@ -43,7 +51,6 @@ class MainPage(BasePage):
 
     def load_feed(self):
         self.driver.get('https://education.vk.company/feed/')
-        time.sleep(3)
 
 
 class TestLK(BaseCase):
@@ -54,21 +61,22 @@ class TestLK(BaseCase):
         login_page.click(
             vk_locators.LoginPageLocators.AUTHBUTTON_LOCATOR,
         )
-        time.sleep(15)
         login_page.click(
             vk_locators.LoginPageLocators.AUTH_LOCATOR,
         )
-        time.sleep(3)
+        WebDriverWait(self.driver, 10).until(
+            EC.presence_of_element_located(vk_locators.LoginPageLocators.LOGIN_LOCATOR)
+        )
         loginInput = login_page.find(vk_locators.LoginPageLocators.LOGIN_LOCATOR)
         loginInput.send_keys(credentials.get('user', ''))
         passInput = login_page.find(vk_locators.LoginPageLocators.PASSWORD_LOCATOR)
         passInput.send_keys(credentials.get('password', ''))
-        time.sleep(3)
         login_page.click(
             vk_locators.LoginPageLocators.LOGIN_BUTTON_LOCATOR,
         )
-        time.sleep(5)
-
+        WebDriverWait(self.driver, 10).until(
+            EC.url_contains(URL_CONFIG['feed'])
+        )
         cookies = self.driver.get_cookies()
         with open('cookies.json', 'w') as f:
             json.dump(cookies, f)
@@ -80,17 +88,19 @@ class TestLK(BaseCase):
         main_page.click(
             vk_locators.MainPageLocators.OPENSEARCH_LOCATOR,
         )
-        time.sleep(3)
+        WebDriverWait(self.driver, 10).until(
+            EC.presence_of_element_located(vk_locators.MainPageLocators.SEARCH_LOCATOR)
+        )
         search_element = vk_locators.MainPageLocators.SEARCH_LOCATOR
         search_field = main_page.find(search_element)
         search_field.send_keys("Артём Черников")
-        time.sleep(3)
         main_page.find(search_element).send_keys(Keys.RETURN)
-        time.sleep(3)
         main_page.click(
             vk_locators.MainPageLocators.FRIEND_LOCATOR,
         )
-        time.sleep(5)
+        WebDriverWait(self.driver, 10).until(
+            EC.presence_of_element_located(vk_locators.MainPageLocators.FRIEND_NAME_LOCATOR)
+        )
 
     def test_seminar(self):
         main_page = MainPage(self.driver)
@@ -99,16 +109,24 @@ class TestLK(BaseCase):
         main_page.click(
             vk_locators.MainPageLocators.PROGRAM_LOCATOR,
         )
-        time.sleep(3)
+        WebDriverWait(self.driver, 10).until(
+            EC.presence_of_element_located(vk_locators.MainPageLocators.PROGRAM_TEST_LOCATOR)
+        )
         main_page.click(
             vk_locators.MainPageLocators.PROGRAM_TEST_LOCATOR,
         )
-        time.sleep(3)
+        WebDriverWait(self.driver, 10).until(
+            EC.presence_of_element_located(vk_locators.MainPageLocators.LESSONS_LOCATOR)
+        )
         main_page.click(
             vk_locators.MainPageLocators.LESSONS_LOCATOR,
         )
-        time.sleep(3)
+        WebDriverWait(self.driver, 10).until(
+            EC.presence_of_element_located(vk_locators.MainPageLocators.LESSON_LOCATOR)
+        )
         main_page.click(
             vk_locators.MainPageLocators.LESSON_LOCATOR,
         )
-        time.sleep(7)
+        WebDriverWait(self.driver, 10).until(
+            EC.presence_of_element_located(vk_locators.MainPageLocators.LESSON_NAME_LOCATOR)
+        )
