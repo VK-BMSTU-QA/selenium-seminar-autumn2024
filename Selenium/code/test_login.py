@@ -1,5 +1,7 @@
 import json
 import os
+import time
+
 import pytest
 from _pytest.fixtures import FixtureRequest
 from selenium.webdriver.common.keys import Keys
@@ -41,7 +43,7 @@ class LoginPage(BasePage):
         self.click(
             basic_locators_vk.LoginPageLocators.GO_BUTTON_AUTHBUTTON_LOCATOR
         )
-        WebDriverWait(self.driver, 10).until(
+        self.wait().until(
             EC.element_to_be_clickable(basic_locators_vk.LoginPageLocators.GO_BUTTON_TYPEAUTH_LOCATOR)
         ).click()
         self.input(
@@ -55,7 +57,7 @@ class LoginPage(BasePage):
         self.click(
             basic_locators_vk.LoginPageLocators.GO_BUTTON_LOGIN_LOCATOR
         )
-        WebDriverWait(self.driver, 10).until(
+        self.wait().until(
             EC.url_contains('/feed/')
         )
 
@@ -99,9 +101,10 @@ class TestLK(BaseCase):
         search_element = basic_locators_vk.MainPageLocators.SEARCH_INPUT_LOCATOR
         main_page.input(search_element, "Александр Никитин")
         main_page.find(search_element).send_keys(Keys.RETURN)
-        WebDriverWait(self.driver, 10).until(
+        main_page.wait().until(
             EC.presence_of_element_located(basic_locators_vk.MainPageLocators.FRIEND_LOCATOR)
         ).click()
+        time.sleep(5)
 
     def test_lesson(self):
         main_page = MainPage(self.driver)
@@ -109,12 +112,13 @@ class TestLK(BaseCase):
         main_page.click(
             basic_locators_vk.MainPageLocators.GO_BUTTON_PROGRAM_LOCATOR
         )
-        WebDriverWait(self.driver, 10).until(
+        main_page.wait().until(
             EC.element_to_be_clickable(basic_locators_vk.MainPageLocators.GO_BUTTON_PROGRAM_TEST_LOCATOR)
         ).click()
         main_page.click(
             basic_locators_vk.MainPageLocators.GO_BUTTON_LESSONS_LOCATOR
         )
-        WebDriverWait(self.driver, 10).until(
+        main_page.wait().until(
             EC.element_to_be_clickable(basic_locators_vk.MainPageLocators.GO_BUTTON_LESSON_LOCATOR)
         ).click()
+        time.sleep(5)

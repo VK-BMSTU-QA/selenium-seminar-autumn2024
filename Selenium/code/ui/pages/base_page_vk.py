@@ -1,61 +1,49 @@
-import time
-
 import allure
-from selenium.webdriver.remote.webelement import WebElement
-from ui.locators import basic_locators_vk
 from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException, NoSuchElementException, WebDriverException
 
-
-class PageNotOpenedExeption(Exception):
+class PageNotOpenedException(Exception):
     pass
 
-
-class BasePage(object):
-
-    locators = basic_locators_vk.LoginPageLocators()
-    locators_main = basic_locators_vk.MainPageLocators()
-    url = 'https://education.vk.company/'
-
-    def is_opened(self, timeout=15):
-        started = time.time()
-        while time.time() - started < timeout:
-            if self.driver.current_url == self.url:
-                return True
-        raise PageNotOpenedExeption(f'{self.url} did not open in {timeout} sec, current url {self.driver.current_url}')
-
+class BasePage:
     def __init__(self, driver):
         self.driver = driver
-        self.is_opened()
+        self.url = getattr(self, 'url', None)
+        if self.url:
+            self.is_opened()
 
-    def wait(self, timeout=None):
-        if timeout is None:
-            timeout = 5
+    def is_opened(self, timeout=15):
+        try:
+            WebDriverWait(self.driver, timeout).until(EC.url_contains(self.url))
+            return True
+        except TimeoutException:
+            allure.attach(self.driver.get_screenshot_as_png(), name="is_opened_failed", attachment_type=allure.attachment_type.PNG)
+            raise PageNotOpenedException(f"{self.url} did not open in {timeout} seconds")
+
+    def wait(self, timeout=10):
         return WebDriverWait(self.driver, timeout=timeout)
 
-    def find(self, locator, timeout=None):
-        return self.wait(timeout).until(EC.presence_of_element_located(locator))
+    def find(self, locator, timeout=10):
+        try:
+            return self.wait(timeout).until(EC.presence_of_element_located(locator))
+        except TimeoutException:
+            allure.attach(self.driver.get_screenshot_as_png(), name=f"find_failed_{locator}", attachment_type=allure.attachment_type.PNG)
+            raise TimeoutException(f"Element with locator {locator} was not found within {timeout} seconds")
 
-    @allure.step('Search')
-    def search(self, query):
-        elem = self.find(self.locators.QUERY_LOCATOR_ID)
-        elem.send_keys(query)
-        go_button = self.find(self.locators.GO_BUTTON_LOCATOR)
-        go_button.click()
-        self.my_assert()
+    def click(self, locator, timeout=10):
+        try:
+            elem = self.wait(timeout).until(EC.element_to_be_clickable(locator))
+            elem.click()
+            return elem
+        except (TimeoutException, WebDriverException) as e:
+            allure.attach(self.driver.get_screenshot_as_png(), name=f"click_failed_{locator}", attachment_type=allure.attachment_type.PNG)
+            raise WebDriverException(f"Error occurred while clicking on element with locator {locator}: {str(e)}")
 
-    @allure.step('input')
-    def input(self, input_field, data):
-        elem = self.find(input_field)
-        elem.send_keys(data)
-
-    @allure.step("Step 1")
-    def my_assert(self):
-        assert 1 == 1
-
-
-    @allure.step('Click')
-    def click(self, locator, timeout=None) -> WebElement:
-        self.find(locator, timeout=timeout)
-        elem = self.wait(timeout).until(EC.element_to_be_clickable(locator))
-        elem.click()
+    def input(self, locator, data):
+        try:
+            elem = self.find(locator)
+            elem.send_keys(data)
+        except NoSuchElementException as e:
+            allure.attach(self.driver.get_screenshot_as_png(), name=f"input_failed_{locator}", attachment_type=allure.attachment_type.PNG)
+            raise NoSuchElementException(f"Input field not found for locator {locator}: {str(e)}")
