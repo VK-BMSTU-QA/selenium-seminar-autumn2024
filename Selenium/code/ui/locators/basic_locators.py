@@ -13,6 +13,8 @@ class BasePageLocators:
     FOUND_LAST_NAME = (By.CSS_SELECTOR, 'p.realname span:nth-child(2)')    
     SCHEDULE_BUTTON = (By.CSS_SELECTOR, 'li.technopark__menu__item_162 > a')
     SEMESTER_BUTTON = (By.CSS_SELECTOR, 'li.intervalItem[intervalid="semester"] > a')
+    WEEK_BUTTON = (By.CSS_SELECTOR, 'li.intervalItem[intervalid="near"] > a')
+    SCHEDULE = (By.CSS_SELECTOR, 'table.schedule-timetable')
     CALENDAR_TABLE = (By.CSS_SELECTOR, "table.calendar-month")
     SCHEDULE_ITEM = (By.CSS_SELECTOR, 'tr.schedule-timetable__item.lessonItem')
     SCHEDULE_ITEM_DATE = (By.CSS_SELECTOR, 'td.schedule-timetable__item__date strong')
