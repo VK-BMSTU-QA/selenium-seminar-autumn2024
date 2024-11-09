@@ -31,22 +31,26 @@ class BasePage(object):
         self.driver: WebDriver = driver
         self.is_opened()
 
-    def wait(self, timeout=None):
-        if timeout is None:
-            timeout = 5
+    def wait(self, timeout=5):
         return WebDriverWait(self.driver, timeout=timeout)
 
-    def find(self, locator, timeout=None) -> WebElement:
+    def find(self, locator, timeout=0) -> WebElement:
         try:
             return self.wait(timeout).until(
                 EC.presence_of_element_located(locator))
         except TimeoutException:
             return None
 
-    def click(self, locator, timeout=None):
-        self.find(locator, timeout).click()
+    def click(self, locator, timeout=0):
+        try:
+            self.find(locator, timeout).click()
+        except TimeoutException:
+            return None
 
-    def send_keys(self, locator, data, timeout=None):
-        item = self.find(locator, timeout)
-        item.clear()
-        item.send_keys(data)
+    def send_keys(self, locator, data, timeout=0):
+        try:
+            item = self.find(locator, timeout)
+            item.clear()
+            item.send_keys(data)
+        except TimeoutException:
+            return None

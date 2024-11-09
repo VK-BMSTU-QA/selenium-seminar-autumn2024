@@ -4,11 +4,11 @@ from selenium.webdriver.common.by import By
 class BasePageLocators:
     OPEN_AUTH_MODAL_BUTTON = (By.XPATH, "//a[contains(@class, 'AuthButton')]")
     LOG_IN_WITH_CREDENTIALS_BUTTON = (
-        By.XPATH, "//button[contains(text(), 'Продолжить с помощью почты и пароля')]")
+        By.XPATH, "//button[contains(@class, 'gtm-signup-modal-link')]")
     EMAIL_INPUT = (By.ID, 'email')
     PASSWORD_INPUT = (By.ID, 'password')
     LOG_IN_BUTTON = (
-        By.XPATH, "//button[contains(text(), 'Войти с паролем')]")
+        By.XPATH, "//button[contains(@class, 'gtm-login-btn') and @type='submit']")
     USER_AGREEMENT_CHECK = (
         By.XPATH, "//div[contains(@class, 'CheckboxStyles') and @role='checkbox']")
 
@@ -22,6 +22,8 @@ class MainPageLocators:
 
 class SchedulePageLocators:
     SEMESTER_SCHEDULE = (By.XPATH, "//li[@intervalid='semester']")
+    DISCIPLINE_FILTER = (By.XPATH, "//div[contains(@class, 'schedule-filters__item_discipline')]")
+    ALL_DISCIPLINES = (By.XPATH, "//div[contains(@class, 'active')]")
 
 
 class LessonPageLocators:
