@@ -1,9 +1,11 @@
 from ui.fixtures import *
 
+vk_url = 'https://education.vk.company/'
+vk_feed_url = 'https://education.vk.company/feed/'
 
 def pytest_addoption(parser):
     parser.addoption('--browser', default='chrome')
-    parser.addoption('--url', default='https://www.python.org')
+    parser.addoption('--url', default=vk_url)
     parser.addoption('--debug_log', action='store_true')
     parser.addoption('--selenoid', action='store_true')
     parser.addoption('--vnc', action='store_true')

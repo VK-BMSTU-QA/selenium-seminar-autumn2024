@@ -50,7 +50,19 @@ class BasePage(object):
 
 
     @allure.step('Click')
-    def click(self, locator, timeout=None) -> WebElement:
+    def click(self, locator, timeout=10) -> WebElement:
         self.find(locator, timeout=timeout)
         elem = self.wait(timeout).until(EC.element_to_be_clickable(locator))
         elem.click()
+
+    @allure.step('Input')
+    def input(self, locator, value, timeout=10):
+        elem = self.find(locator, timeout)
+        elem.clear()
+        elem.send_keys(value)
+
+    def wait_for_elements(self, locator, timeout=10):
+        return self.wait(timeout).until(EC.presence_of_all_elements_located(locator))
+    
+    def wait_for_url(self, url):
+        WebDriverWait(self.driver, 10).until(EC.url_to_be(url))
