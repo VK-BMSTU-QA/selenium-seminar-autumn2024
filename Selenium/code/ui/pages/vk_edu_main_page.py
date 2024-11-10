@@ -18,19 +18,15 @@ class MainPage(BasePage):
         self.input(self.locators.SEARCH_FIELD, name, timeout=5)
         self.input(self.locators.SEARCH_FIELD, Keys.ENTER, timeout=5)
 
-        self.click(self.locators.PROFILE_AVATAR, timeout=10)
-        time.sleep(3)
+        self.click(self.locators.PROFILE_AVATAR, timeout=3000)
 
     def get_lesson(self):
-        self.click(self.locators.SCHEDULE_BTN, timeout=10)
-        time.sleep(2)
+        self.click(self.locators.SCHEDULE_BTN, timeout=2000)
 
-        self.click(self.locators.SHOW_FULL_SCHEDULE_BTN, timeout=10)
-        time.sleep(2)
+        self.click(self.locators.SHOW_FULL_SCHEDULE_BTN, timeout=2000)
 
         lesson_data = self.find(self.locators.CURRENT_LESSON_BTN).text
 
-        self.click(self.locators.CURRENT_LESSON_BTN, timeout=10)
-        time.sleep(3)
+        self.click(self.locators.CURRENT_LESSON_BTN, timeout=3000)
 
         return lesson_data
