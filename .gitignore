@@ -1,1 +1,7 @@
 .idea
+/chrome-win64
+/chromedriver-win64
+/venv
+.env
+.env
+*.pyc

@@ -15,7 +15,7 @@ class BasePage(object):
 
     locators = basic_locators.BasePageLocators()
     locators_main = basic_locators.MainPageLocators()
-    url = 'https://www.python.org/'
+    url = 'https://education.vk.company/'
 
     def is_opened(self, timeout=15):
         started = time.time()
@@ -54,3 +54,7 @@ class BasePage(object):
         self.find(locator, timeout=timeout)
         elem = self.wait(timeout).until(EC.element_to_be_clickable(locator))
         elem.click()
+
+    def input(self, locator, data, timeout=None):
+        elem = self.find(locator, timeout=timeout)
+        elem.send_keys(data)
