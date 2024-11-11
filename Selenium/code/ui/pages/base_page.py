@@ -11,8 +11,7 @@ class PageNotOpenedException(Exception):
 
 
 class BasePage:
-    locators = basic_locators.AuthPageLocators
-    locators_main = basic_locators.DashboardPageLocators
+    locators = basic_locators.MainPageLocators
     url = 'https://education.vk.company/'
     default_timeout = 5
 
@@ -46,6 +45,3 @@ class BasePage:
         element.clear()
         element.send_keys(data)
 
-    @allure.step("Verifying search result")
-    def _assert_search(self) -> None:
-        assert 1 == 1, "Search verification placeholder"
