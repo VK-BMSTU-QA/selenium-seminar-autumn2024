@@ -1,5 +1,4 @@
 import time
-
 import allure
 from selenium.webdriver.remote.webelement import WebElement
 from ui.locators import basic_locators
@@ -7,50 +6,42 @@ from selenium.webdriver.support.wait import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
 
-class PageNotOpenedExeption(Exception):
+class PageNotOpenedException(Exception):
     pass
 
 
-class BasePage(object):
-
-    locators = basic_locators.BasePageLocators()
-    locators_main = basic_locators.MainPageLocators()
-    url = 'https://www.python.org/'
-
-    def is_opened(self, timeout=15):
-        started = time.time()
-        while time.time() - started < timeout:
-            if self.driver.current_url == self.url:
-                return True
-        raise PageNotOpenedExeption(f'{self.url} did not open in {timeout} sec, current url {self.driver.current_url}')
+class BasePage:
+    locators = basic_locators.MainPageLocators
+    url = 'https://education.vk.company/'
+    default_timeout = 5
 
     def __init__(self, driver):
         self.driver = driver
-        self.is_opened()
+        self._ensure_page_opened()
 
-    def wait(self, timeout=None):
-        if timeout is None:
-            timeout = 5
-        return WebDriverWait(self.driver, timeout=timeout)
+    def _ensure_page_opened(self, timeout: int = 15) -> None:
+        WebDriverWait(self.driver, timeout).until(
+            lambda driver: driver.current_url == self.url,
+            f"{self.url} did not open in {timeout} sec, current URL: {self.driver.current_url}"
+        )
 
-    def find(self, locator, timeout=None):
-        return self.wait(timeout).until(EC.presence_of_element_located(locator))
+    def wait_until(self, condition, timeout: int = default_timeout) -> WebDriverWait:
+        return WebDriverWait(self.driver, timeout).until(condition)
 
-    @allure.step('Search')
-    def search(self, query):
-        elem = self.find(self.locators.QUERY_LOCATOR_ID)
-        elem.send_keys(query)
-        go_button = self.find(self.locators.GO_BUTTON_LOCATOR)
-        go_button.click()
-        self.my_assert()
+    def find(self, locator, timeout: int = default_timeout) -> WebElement:
+        return self.wait_until(EC.presence_of_element_located(locator), timeout)
 
-    @allure.step("Step 1")
-    def my_assert(self):
-        assert 1 == 1
+    def click(self, locator, timeout: int = default_timeout) -> None:
+        self.wait_until(EC.element_to_be_clickable(locator), timeout).click()
 
+    @allure.step("Performing search")
+    def search(self, query: str) -> None:
+        self.input(self.locators.QUERY_LOCATOR_ID, query)
+        self.click(self.locators.GO_BUTTON_LOCATOR)
+        self._assert_search()
 
-    @allure.step('Click')
-    def click(self, locator, timeout=None) -> WebElement:
-        self.find(locator, timeout=timeout)
-        elem = self.wait(timeout).until(EC.element_to_be_clickable(locator))
-        elem.click()
+    def input(self, locator, data: str) -> None:
+        element = self.find(locator)
+        element.clear()
+        element.send_keys(data)
+
