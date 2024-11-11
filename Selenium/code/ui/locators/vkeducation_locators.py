@@ -15,5 +15,3 @@ class MainPageLocators:
     SHOW_FULL_SCHEDULE_BTN = (By.LINK_TEXT, "Весь семестр")
     CURRENT_LESSON_BTN = (By.XPATH, '//*[@id="schedule_item_1729544400"]/td[3]/a')
     LESSON_SUBJECT = (By.XPATH, '//*[@id="schedule_item_1729544400"]/td[3]/a/span')
-
-
