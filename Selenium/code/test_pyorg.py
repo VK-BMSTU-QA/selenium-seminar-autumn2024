@@ -51,7 +51,6 @@ class TestExample(BaseCase):
     @pytest.mark.skip('skip')
     def test_iframe(self):
         self.main_page.click(self.main_page.locators.START_SHELL)
-        time.sleep(15)
         iframe_first = self.main_page.find((By.XPATH, '//iframe'))
         self.driver.switch_to.frame(iframe_first)
         iframe_second = self.main_page.find((By.ID, 'id_console'))
@@ -61,7 +60,6 @@ class TestExample(BaseCase):
         console = self.main_page.find(self.main_page.locators.PYTHON_CONSOLE)
         console.send_keys('assert 1 == 0')
         console.send_keys(Keys.ENTER)
-        time.sleep(10)
         self.driver.switch_to.default_content()
 
     @pytest.mark.skip('skip')
@@ -103,7 +101,6 @@ class TestLoad(BaseCase):
          
         self.main_page.click(
             (By.XPATH, '//a[@href="https://www.python.org/ftp/python/3.10.0/python-3.10.0-embed-win32.zip"]'))
-        time.sleep(10)
 
     @pytest.fixture()
     def file_path(self, repo_root):
