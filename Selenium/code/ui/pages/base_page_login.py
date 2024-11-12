@@ -39,13 +39,13 @@ class BasePage(object):
             return self.wait(timeout).until(
                 EC.presence_of_element_located(locator))
         except TimeoutException:
+            print(f'TimeoutException occured: unable to find element during {timeout}s timeout')
             return None
 
     def click(self, locator, timeout=0):
-        try:
-            self.find(locator, timeout).click()
-        except TimeoutException:
-            return None
+        element = self.find(locator, timeout)
+        if element != None:
+            element.click()
 
     def send_keys(self, locator, data, timeout=0):
         try:

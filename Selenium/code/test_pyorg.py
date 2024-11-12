@@ -2,7 +2,6 @@ import os
 
 import allure
 import pytest
-import time
 
 from selenium.webdriver import ActionChains
 
@@ -33,10 +32,8 @@ class TestExample(BaseCase):
     @allure.step('Click')
     @pytest.mark.skip('skip')
     def test_negative_search(self):
-        time.sleep(5)
         self.base_page.search('adasdasdasdasdasda')
-        time.sleep(5)
-
+         
         assert 'No results found' in self.driver.page_source
 
     @pytest.mark.skip('skip')
@@ -70,34 +67,31 @@ class TestExample(BaseCase):
     @pytest.mark.skip('skip')
     def test_new_tab(self):
         current_window = self.driver.current_window_handle
-
         news = self.main_page.find((By.ID, 'news'))
         ActionChains(self.driver).key_down(Keys.COMMAND).click(
             news).key_up(Keys.COMMAND).perform()
-        time.sleep(5)
 
         with self.switch_to_window(current=current_window, close=False):
             assert self.driver.current_url == 'https://www.python.org/blogs/'
-            time.sleep(3)
-        time.sleep(3)
+             
+         
 
     @pytest.mark.skip('skip')
     def test_events(self):
-        time.sleep(5)
+         
         with allure.step('Going to events page'):
             events_page = self.main_page.go_to_events_page()
-        time.sleep(5)
+         
         with allure.step('asserting ...'):
             assert 1 == 1
 
     @pytest.mark.skip('skip')
     def test_relative(self):
-        time.sleep(5)
         intro = self.main_page.find((By.CSS_SELECTOR, 'div.introduction'))
         learn_more = intro.find_element(*self.main_page.locators.READ_MORE)
         assert learn_more.get_attribute(
             'href') == self.driver.current_url + 'doc/'
-        time.sleep(5)
+         
 
 
 class TestLoad(BaseCase):
@@ -106,7 +100,7 @@ class TestLoad(BaseCase):
     def test_download(self):
         self.driver.get(
             'https://www.python.org/downloads/release/python-3100/')
-        time.sleep(5)
+         
         self.main_page.click(
             (By.XPATH, '//a[@href="https://www.python.org/ftp/python/3.10.0/python-3.10.0-embed-win32.zip"]'))
         time.sleep(10)
@@ -119,10 +113,8 @@ class TestLoad(BaseCase):
     def test_upload(self, file_path):
         self.driver.get('https://ps.uci.edu/~franklin/doc/file_upload.html')
         input = (By.NAME, 'userfile')
-        time.sleep(5)
         self.main_page.find(input).send_keys(file_path)
-        time.sleep(5)
-
+         
 
 @pytest.mark.skip('skip')
 class TestFailed(BaseCase):
@@ -131,13 +123,9 @@ class TestFailed(BaseCase):
     def test_fail(self):
         self.main_page.find((By.XPATH, '12312312312312'), timeout=1)
 
-        time.sleep(10)
-
     @pytest.mark.skip('skip')
     def test_logs_browser(self):
-        time.sleep(10)
         self.driver.get('https://target.my.com/')
-        time.sleep(10)
         assert 0
 
     @pytest.mark.skip('skip')
@@ -145,8 +133,3 @@ class TestFailed(BaseCase):
     def test_log(self):
         events_page = self.main_page.go_to_events_page()
         assert 1 == 0
-
-
-@pytest.mark.skip('skip')
-def test_check_all_drivers(all_drivers):
-    time.sleep(3)
