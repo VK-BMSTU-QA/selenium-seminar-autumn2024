@@ -1,3 +1,4 @@
+import os
 import time
 
 import pytest
@@ -8,7 +9,11 @@ from selenium.webdriver.support.wait import WebDriverWait
 from Selenium.code.ui.locators import vk_locators
 from Selenium.code.ui.pages.base_page_VK import BasePageVK
 from ui.pages.base_page import BasePage
+from Selenium.code.ui.url.urls import ConfigUrls
 from selenium.webdriver.support import expected_conditions as EC
+from dotenv import load_dotenv
+load_dotenv()
+
 
 class BaseCase:
     authorize = True
@@ -24,8 +29,8 @@ class BaseCase:
 @pytest.fixture(scope='session')
 def credentials():
     return {
-        'user': '', # сюда данные для успешной работы тестов
-        'password': ''
+        'user': os.getenv('EMAIL'),
+        'password': os.getenv('PASSWORD')
     }
 
 
@@ -35,18 +40,16 @@ def cookies(credentials, config):
 
 
 class LoginPage(BasePageVK):
-    url = 'https://education.vk.company/'
+    url = ConfigUrls.BASE
 
     def login(self, credentials):
         self.driver.maximize_window()
         self.click(
             vk_locators.LoginPageLocators.GO_BUTTON_AUTHBUTTON_LOCATOR, timeout=10
         )
-        time.sleep(3)
         self.click(
             vk_locators.LoginPageLocators.GO_BUTTON_AUTH_WHITHOUT_VK_LOCATOR, timeout=10
         )
-        time.sleep(3)
         self.input(
             vk_locators.LoginPageLocators.LOGIN_INPUT_LOCATOR,
             credentials.get('user', ''),
@@ -55,29 +58,32 @@ class LoginPage(BasePageVK):
             vk_locators.LoginPageLocators.PASSWORD_INPUT_LOCATOR,
             credentials.get('password', '')
         )
-        time.sleep(3)
-
         self.click(
             vk_locators.LoginPageLocators.GO_BUTTON_SUBMIT_LOCATOR, timeout=10
         )
 
-        time.sleep(5)
-
 
 class MainPage(BasePageVK):
-    url = 'https://education.vk.company/feed/'
-
+    url = ConfigUrls.FEED
     def open_main(self):
-        self.driver.get('https://education.vk.company/feed/')
-        time.sleep(3)
+        self.driver.get(ConfigUrls.FEED)
+        WebDriverWait(self.driver, 10).until(
+            EC.visibility_of_element_located((By.TAG_NAME, 'body'))
+        )
 
     def open_schedule(self):
-        self.driver.get("https://education.vk.company/schedule/")
-        time.sleep(3)
+        self.driver.get(ConfigUrls.SCHEDULE)
+        WebDriverWait(self.driver, 10).until(
+            EC.visibility_of_element_located((By.TAG_NAME, 'body'))
+        )
+        # time.sleep(1) # без этого кнопка есть, прожимается, но при этом скрипт не работает.
+        # Кнопка жмется, а далее ничего не происходит
 
     def open_url(self, url):
         self.driver.get(url)
-        time.sleep(3)
+        WebDriverWait(self.driver, 10).until(
+            EC.visibility_of_element_located((By.TAG_NAME, 'body'))
+        )
 
 
 class TestLogin(BaseCase):
@@ -117,7 +123,6 @@ class TestLK(BaseCase):
         )
         username = first_friend.text  # Искомый юзернейм
         print("\nusername: " + username)
-        time.sleep(5)
 
     def test_lesson(self, credentials):
         login_page = LoginPage(self.driver)
@@ -125,6 +130,12 @@ class TestLK(BaseCase):
 
         main_page = MainPage(self.driver)
         main_page.open_schedule()
+
+        WebDriverWait(self.driver, 10).until(
+            EC.presence_of_element_located(
+                vk_locators.MainPageLocators.LOGOUT_SCRIPT
+            )
+        )
 
         main_page.click(
             vk_locators.MainPageLocators.GO_BOTTON_SEMESTR_LOCATOR, timeout=10

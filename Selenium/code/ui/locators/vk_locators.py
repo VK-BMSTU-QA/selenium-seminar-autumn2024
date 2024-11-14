@@ -13,5 +13,7 @@ class MainPageLocators:
     FRIENDS_LOCATOR = (By.XPATH, "//a[text()='Друзья']")
     ALL_FRIENDS_LOCATOR = (By.XPATH, "(//div[contains(@class, 'friends_item')])//p[@class='username']/a")
     GO_BOTTON_SEMESTR_LOCATOR = (By.CSS_SELECTOR, 'li[intervalid="semester"]')
+    GO_BOTTON_NEAR_LOCATOR = (By.CSS_SELECTOR, 'li[intervalid="near"]')
+    LOGOUT_SCRIPT = (By.CLASS_NAME, 'logout')
     SEMINAR_INFO_LOCATOR = (By.CSS_SELECTOR, 'tr#schedule_item_1729544400 a.schedule-show-info')
     DESCRIPTION_LOCATOR = (By.XPATH, "//div[@class='description']//div[@class='section-text text']")
