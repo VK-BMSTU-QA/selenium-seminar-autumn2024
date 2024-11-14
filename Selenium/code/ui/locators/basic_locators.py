@@ -35,6 +35,3 @@ class MainPageLocators(BasePageLocators):
     HOMEWORK_TITLE = (By.XPATH, "//div[contains(@class, 'homework')]//h2[contains(@class, 'title')]")
     HOMEWORK_DEADLINE = (By.XPATH, "//div[contains(@class, 'homework')]//span[contains(@class, 'status')]")
 
-
-class EventsPageLocators(BasePageLocators):
-    pass

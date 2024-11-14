@@ -35,6 +35,13 @@ class BasePage(object):
 
     def find(self, locator, timeout=None):
         return self.wait(timeout).until(EC.presence_of_element_located(locator))
+    
+    def check_for_visible(self, locator, timeout=None):
+        return self.wait(timeout).until(EC.visibility_of_element_located(locator))
+    
+    def check_for_clickable(self, locator, timeout=None):
+        return self.wait(timeout).until(EC.element_to_be_clickable(locator))
+
 
     @allure.step('Search')
     def search(self, query):
@@ -52,5 +59,6 @@ class BasePage(object):
     @allure.step('Click')
     def click(self, locator, timeout=None) -> WebElement:
         self.find(locator, timeout=timeout)
-        elem = self.wait(timeout).until(EC.element_to_be_clickable(locator))
+        self.check_for_visible(locator)
+        elem = self.check_for_clickable(locator)
         elem.click()

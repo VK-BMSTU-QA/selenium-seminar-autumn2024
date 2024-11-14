@@ -2,7 +2,7 @@ import os
 import allure
 import pytest
 from dotenv import load_dotenv
-from ui.locators import basic_locators
+from ui.locators import basic_locators, basic_urls
 from _pytest.fixtures import FixtureRequest
 from ui.pages.base_page import BasePage
 from selenium.webdriver.common.by import By
@@ -34,7 +34,7 @@ def credentials():
 
 
 class LoginPage(BasePage):
-    url = 'https://education.vk.company/'
+    url = basic_urls.START_URL
     locators = basic_locators.LoginPageLocators
 
     def login(self, user, password):
@@ -59,7 +59,7 @@ class LoginPage(BasePage):
 
 
 class MainPage(BasePage):
-    url = 'https://education.vk.company/feed/'
+    url = basic_urls.FEED_URL
     locators = basic_locators.MainPageLocators
 
     @allure.step('Click Search Icon')
@@ -89,12 +89,12 @@ class MainPage(BasePage):
     def click_discipline(self):
         self.click(self.locators.DISCIPLINE_LINK)
 
-    @allure.step('Click Lessons')
-    def click_lessons(self):
+    @allure.step('Click List Of Lessons')
+    def click_list_of_lessons(self):
         self.click(self.locators.LESSONS_BUTTON)
 
-    @allure.step('Click Lesson')
-    def click_lesson(self, lesson_name):
+    @allure.step('Click Lesson With Given Name')
+    def click_lesson_with_given_name(self, lesson_name):
         self.click(self.locators.LESSON_LINK(lesson_name))
 
     def get_lesson_info(self):
@@ -134,7 +134,7 @@ class TestMemberSearch(BaseCase):
 
         user_info = main_page.get_user_info()
 
-        assert self.driver.current_url == "https://education.vk.company/profile/user_165480/"
+        assert self.driver.current_url == basic_urls.CHECK_USER_URL
 
         print("Информация о пользователе:")
         print("Обо мне:", user_info["about"])
@@ -153,13 +153,13 @@ class TestLessonPage(BaseCase):
 
         main_page.click_discipline()
 
-        main_page.click_lessons()
+        main_page.click_list_of_lessons()
 
-        main_page.click_lesson("End-to-End тесты на Python")
+        main_page.click_lesson_with_given_name("End-to-End тесты на Python")
 
         lesson_info = main_page.get_lesson_info()
 
-        assert self.driver.current_url == "https://education.vk.company/curriculum/program/lesson/28796/"
+        assert self.driver.current_url == basic_urls.CHECK_LESSON_URL
 
         print("Информация о занятии:")
         print("Тема:", lesson_info["title"])
