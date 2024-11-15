@@ -33,12 +33,6 @@ def credentials():
         'password': os.getenv('PASSWORD')
     }
 
-
-@pytest.fixture(scope='session')
-def cookies(credentials, config):
-        pass
-
-
 class LoginPage(BasePageVK):
     url = ConfigUrls.BASE
 

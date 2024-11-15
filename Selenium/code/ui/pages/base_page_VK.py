@@ -39,7 +39,7 @@ class BasePageVK(object):
         try:
             return self.wait(timeout).until(EC.presence_of_element_located(locator))
         except TimeoutException:
-            print(f'TimeoutException')
+            print(f'TimeoutException. Item was not found')
             return None
 
     @allure.step('find all elements')
